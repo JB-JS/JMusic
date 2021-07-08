@@ -212,6 +212,8 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
     let time = 0
 
+    console.log(timeItems)
+
     // 플레이리스트 아이템 요소들 시간 더해서 변수에 저장하기
     timeItems.forEach(({ duration }) => {
       const [min, sec = 0] = duration
