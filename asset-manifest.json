@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/JMusic/static/js/main.1326ac8f.chunk.js",
-    "main.js.map": "/JMusic/static/js/main.1326ac8f.chunk.js.map",
+    "main.js": "/JMusic/static/js/main.7a36fd04.chunk.js",
+    "main.js.map": "/JMusic/static/js/main.7a36fd04.chunk.js.map",
     "runtime-main.js": "/JMusic/static/js/runtime-main.30d40bfe.js",
     "runtime-main.js.map": "/JMusic/static/js/runtime-main.30d40bfe.js.map",
-    "static/js/2.7c96ca9d.chunk.js": "/JMusic/static/js/2.7c96ca9d.chunk.js",
-    "static/js/2.7c96ca9d.chunk.js.map": "/JMusic/static/js/2.7c96ca9d.chunk.js.map",
+    "static/js/2.141d6114.chunk.js": "/JMusic/static/js/2.141d6114.chunk.js",
+    "static/js/2.141d6114.chunk.js.map": "/JMusic/static/js/2.141d6114.chunk.js.map",
     "index.html": "/JMusic/index.html",
-    "static/js/2.7c96ca9d.chunk.js.LICENSE.txt": "/JMusic/static/js/2.7c96ca9d.chunk.js.LICENSE.txt",
+    "static/js/2.141d6114.chunk.js.LICENSE.txt": "/JMusic/static/js/2.141d6114.chunk.js.LICENSE.txt",
     "static/media/google.b9af0b7e.svg": "/JMusic/static/media/google.b9af0b7e.svg",
     "static/media/mute.65b8c697.svg": "/JMusic/static/media/mute.65b8c697.svg",
     "static/media/nextArrow.b721dfb8.svg": "/JMusic/static/media/nextArrow.b721dfb8.svg",
@@ -25,7 +25,7 @@
   },
   "entrypoints": [
     "static/js/runtime-main.30d40bfe.js",
-    "static/js/2.7c96ca9d.chunk.js",
-    "static/js/main.1326ac8f.chunk.js"
+    "static/js/2.141d6114.chunk.js",
+    "static/js/main.7a36fd04.chunk.js"
   ]
 }
