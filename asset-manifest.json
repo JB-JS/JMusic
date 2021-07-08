@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/JMusic/static/js/main.7a36fd04.chunk.js",
-    "main.js.map": "/JMusic/static/js/main.7a36fd04.chunk.js.map",
+    "main.js": "/JMusic/static/js/main.cb08713b.chunk.js",
+    "main.js.map": "/JMusic/static/js/main.cb08713b.chunk.js.map",
     "runtime-main.js": "/JMusic/static/js/runtime-main.30d40bfe.js",
     "runtime-main.js.map": "/JMusic/static/js/runtime-main.30d40bfe.js.map",
     "static/js/2.141d6114.chunk.js": "/JMusic/static/js/2.141d6114.chunk.js",
@@ -26,6 +26,6 @@
   "entrypoints": [
     "static/js/runtime-main.30d40bfe.js",
     "static/js/2.141d6114.chunk.js",
-    "static/js/main.7a36fd04.chunk.js"
+    "static/js/main.cb08713b.chunk.js"
   ]
 }
