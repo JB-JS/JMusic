@@ -40,7 +40,7 @@ const App = () => {
 
   return (
     <>
-      <BrowserRouter basename="/JMusic">
+      <BrowserRouter>
         <GlobalStyle />
         <GridContainer>
           <Sidebar />

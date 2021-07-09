@@ -14,5 +14,6 @@ export const HourMinute = (duration) => {
   const hour = Math.floor(duration / 3600)
   const minute = Math.floor((duration / 60) % 60)
 
+  if (duration === 0) return '0초'
   return `${hour > 0 ? `${hour}시간` : ''} ${minute > 0 ? `${minute}분` : ''}`
 }

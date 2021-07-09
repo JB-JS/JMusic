@@ -20,10 +20,14 @@ const InfoContainer = styled.div`
 const ItemHead = styled.div`
   display: flex;
   margin-bottom: 2.5rem;
+  @media (max-width: 1000px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `
 
 const HeadThumbnail = styled.img`
-  width: 270px;
+  max-width: 270px;
   height: 270px;
   object-fit: cover;
   box-shadow: 0 10px 20px 0 var(--playlist-shadow-color);
@@ -33,7 +37,11 @@ const HeadThumbnail = styled.img`
 const HeadContent = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 2.125rem;
+  align-items: center;
+  @media (min-width: 1000px) {
+    margin-left: 2.125rem;
+    align-items: flex-start;
+  }
   font-size: 0.8125rem;
   font-weight: 200;
   color: var(--system-primary);
@@ -204,35 +212,35 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             ytApi.getVideoTime(item.snippet.resourceId.videoId, window.token)
           )
         )
-      ).map((el) => {
-        if (el.data.items.length > 0) {
-          return el.data.items[0].contentDetails
-        }
-      })
+      )
+        .filter((el) => el.data.items.length > 0)
+        .map((el) => {
+          const duration = el.data.items[0].contentDetails.duration
+          const [min, sec] = duration
+            .substring(2, duration.length - 1)
+            .split('M')
+            .join('')
+          return { duration: `${min}:${sec >= 10 ? sec : `0${sec}`}` }
+        })
 
     let time = 0
 
-    console.log('timeitems:', timeItems)
-
     // 플레이리스트 아이템 요소들 시간 더해서 변수에 저장하기
-    timeItems.forEach(({ duration }) => {
-      const [min, sec = 0] = duration
-        .substring(2, duration.length - 1)
-        .split('M')
+    timeItems &&
+      timeItems.forEach(({ duration }) => {
+        const [min, sec = 0] = duration.split(':')
 
-      time = time + parseInt(min * 60) + parseInt(sec)
-    })
+        time = time + parseInt(min * 60) + parseInt(sec)
+      })
 
     return {
       listData: { ...listData, totalTime: HourMinute(time) },
       itemData: {
         ...itemData,
         items: [
-          ...itemData.items.map((item, idx) => {
-            if (Object.keys(item.snippet.thumbnails).length) {
-              return { ...item, ...timeItems[idx] }
-            }
-          }),
+          ...itemData.items
+            .filter((item) => Object.keys(item.snippet.thumbnails).length)
+            .map((item, idx) => ({ ...item, ...timeItems[idx] })),
         ],
       },
     }
@@ -369,12 +377,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                       <div>{item.snippet.videoOwnerChannelTitle}</div>
                     </td>
                     <td></td>
-                    <td>
-                      {item.duration
-                        .substring(2, item.duration.length - 1)
-                        .split('M')
-                        .join(':')}
-                    </td>
+                    <td>{item.duration}</td>
                   </TbodyRow>
                 ))}
               </Tbody>
