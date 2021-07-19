@@ -83,7 +83,6 @@ const Sidebar = ({ playlists, setPlaylists }) => {
   }
 
   useEffect(() => {
-    console.log('getPlaylist')
     const fetchPlaylists = async () => {
       try {
         const {
@@ -133,7 +132,7 @@ const Sidebar = ({ playlists, setPlaylists }) => {
           </li>
         </ul>
 
-        {playlists && playlists.length > 0 && (
+        {isLoggedIn && playlists && playlists.length > 0 && (
           <PlaylistItems title="플레이리스트" items={playlists} />
         )}
       </Nav>

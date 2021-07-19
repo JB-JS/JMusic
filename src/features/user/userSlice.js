@@ -4,7 +4,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState: (localStorage.getItem('user') &&
     JSON.parse(localStorage.getItem('user'))) || {
-    auth: null,
     displayName: null,
     photoURL: null,
     access_token: null,
@@ -20,8 +19,6 @@ export const userSlice = createSlice({
     },
 
     signOut: (state) => {
-      state.auth()
-
       return {
         auth: null,
         displayName: null,
