@@ -1,22 +1,25 @@
-import styled from 'styled-components'
+import { useState } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import styled from 'styled-components'
 import GlobalStyle from './components/GlobalStyle'
 import Sidebar from './components/Sidebar'
 import Home from './pages/Home'
 import Search from './pages/Search'
 import Playlist from './pages/Playlist'
-import { useState } from 'react'
 import Player from './components/Player'
+import NoLogin from './components/NoLogin'
+import { useSelector } from 'react-redux'
 
 const GridContainer = styled.div`
   display: grid;
   height: 100vh;
   grid-template-columns: var(--sidebar-width) auto;
-  grid-template-rows: 100%;
+  grid-template-rows: 100vh;
 `
 
 const Page = styled.div`
   padding-bottom: ${(props) => props.played && 'var(--player-bar-height)'};
+  overflow-y: scroll;
 `
 
 const App = () => {
@@ -28,7 +31,11 @@ const App = () => {
     type: 'video',
   })
 
+  const [playlists, setPlaylists] = useState([])
+
   const { playlistId, videoId, isPlayed, type } = video
+
+  const { isLoggedIn } = useSelector((state) => state.user)
 
   const onClick = (e) => {
     setVideo({
@@ -43,9 +50,15 @@ const App = () => {
       <BrowserRouter>
         <GlobalStyle />
         <GridContainer>
-          <Sidebar />
+          <Sidebar playlists={playlists} setPlaylists={setPlaylists} />
           <Page played={isPlayed}>
             <Switch>
+              {!isLoggedIn && (
+                <Route
+                  path={['/', '/search', '/playlist/:playlistId']}
+                  render={() => <NoLogin />}
+                />
+              )}
               <Route
                 path="/"
                 render={(routeProps) => (

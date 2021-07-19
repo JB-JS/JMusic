@@ -1,11 +1,14 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react'
+import React, { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { NavLink, useHistory } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import SearchForm from '../SearchForm'
 import Icon from '../Icon'
-
+import SigninBtn from '../SigninBtn'
 import { ytApi } from '../../lib/api/api'
 import PlaylistItems from '../PlaylistItems'
+import { signOut } from '../../features/user/userSlice'
+import { useDispatch } from 'react-redux'
 
 const Aside = styled.aside`
   display: grid;
@@ -68,113 +71,24 @@ const Menu = styled(NavLink)`
   }
 `
 
-const Signin = styled.div`
-  display: inline-flex;
-  align-items: center;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: var(--system-primary);
-  color: var(--googleBtn-color);
-  border-radius: 6px;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  > svg {
-    margin-right: 0.625rem;
-  }
-`
+const Sidebar = ({ playlists, setPlaylists }) => {
+  const { displayName, photoURL, isLoggedIn, access_token } = useSelector(
+    (state) => state.user
+  )
 
-const initialState = {
-  displayName: null,
-  photoURL: null,
-  token: null,
-  isLoggedIn: false,
-}
+  const dispatch = useDispatch()
 
-function reducer(state, action) {
-  switch (action.type) {
-    case 'SIGN_IN':
-      return {
-        ...state,
-        ...action.payload,
-      }
-    case 'SIGN_OUT':
-      return {
-        ...state,
-        displayName: null,
-        photoURL: null,
-        token: null,
-        isLoggedIn: false,
-      }
-    default:
-      return { ...state }
-  }
-}
-
-const Sidebar = () => {
-  const [playlists, setPlaylists] = useState([])
-  const [auth, setAuth] = useState(null)
-  const [state, dispatch] = useReducer(reducer, initialState)
-
-  const history = useHistory()
-
-  const { isLoggedIn, displayName, photoURL } = state
-
-  const buttonRef = useRef(null)
-
-  const onSuccess = (googleUser) => {
-    const profile = googleUser.getBasicProfile()
-    const auth = googleUser.getAuthResponse(true)
-    const displayName = profile.getName()
-    const photoURL = profile.getImageUrl()
-
-    window.token = auth.access_token
-
-    dispatch({
-      type: 'SIGN_IN',
-      payload: {
-        displayName,
-        photoURL,
-        token: window.token,
-        isLoggedIn: true,
-      },
-    })
-  }
-
-  const onLogout = () => {
-    auth.signOut().then(() => {
-      history.push('/')
-
-      dispatch({
-        type: 'SIGN_OUT',
-      })
-
-      setPlaylists([])
-    })
+  const onClick = () => {
+    dispatch(signOut())
   }
 
   useEffect(() => {
-    window.gapi.load('auth2', function () {
-      const googleAuth = window.gapi.auth2.init({
-        client_id:
-          '612653883280-agd5lm8n0qum7eh5fj27cmvt0hhkq2hq.apps.googleusercontent.com',
-      })
-
-      googleAuth.attachClickHandler(
-        buttonRef.current,
-        { scope: 'https://www.googleapis.com/auth/youtube' },
-        onSuccess
-      )
-
-      setAuth(googleAuth)
-    })
-  }, [isLoggedIn])
-
-  useEffect(() => {
+    console.log('getPlaylist')
     const fetchPlaylists = async () => {
       try {
         const {
           data: { items },
-        } = await ytApi.getPlaylists(window.token)
+        } = await ytApi.getPlaylists(access_token)
         setPlaylists(items)
       } catch (error) {
         console.log(error)
@@ -182,7 +96,7 @@ const Sidebar = () => {
     }
 
     isLoggedIn && fetchPlaylists()
-  }, [isLoggedIn, setPlaylists])
+  }, [isLoggedIn, setPlaylists, access_token])
 
   return (
     <Aside>
@@ -230,14 +144,11 @@ const Sidebar = () => {
             <Avatar src={photoURL} alt="user Profile" />
             <div>
               <UserName>{displayName}</UserName>
-              <LogOut onClick={onLogout}>로그아웃</LogOut>
+              <LogOut onClick={onClick}>로그아웃</LogOut>
             </div>
           </>
         ) : (
-          <Signin ref={buttonRef}>
-            <Icon name="google" />
-            <span>Sign in With Google</span>
-          </Signin>
+          <SigninBtn />
         )}
       </Profile>
     </Aside>

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import Icon from '../../components/Icon'
 import { ytApi } from '../../lib/api/api'
 import { HourMinute } from '../../lib/utils/helper'
+import { useSelector } from 'react-redux'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -190,18 +191,19 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const playlistId = match.params.playlistId
 
   const [state, dispatch] = useReducer(reducer, initialState)
+  const { access_token } = useSelector((state) => state.user)
 
   const { loading, error, datas } = state
 
   const getPlaylist = useCallback(async () => {
     const { data: itemData } = await ytApi.getPlaylistItems(
       playlistId,
-      window.token
+      access_token
     )
 
     const { data: listData } = await ytApi.getPlaylistsById(
       playlistId,
-      window.token
+      access_token
     )
 
     const timeItems =
@@ -209,7 +211,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
       (
         await Promise.all(
           itemData.items.map((item) =>
-            ytApi.getVideoTime(item.snippet.resourceId.videoId, window.token)
+            ytApi.getVideoTime(item.snippet.resourceId.videoId, access_token)
           )
         )
       )
@@ -244,7 +246,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         ],
       },
     }
-  }, [playlistId])
+  }, [playlistId, access_token])
 
   const fetchData = useCallback(async () => {
     dispatch({ type: 'LOADING' })

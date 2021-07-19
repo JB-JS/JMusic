@@ -3,10 +3,7 @@ import styled from 'styled-components'
 import Item from '../Item'
 
 const Container = styled.div`
-  height: 100%;
   padding: 2rem 2.5rem 0;
-
-  overflow-y: auto;
 `
 const Title = styled.h2`
   font-size: 1.5rem;
