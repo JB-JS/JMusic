@@ -14,7 +14,7 @@ const GridContainer = styled.div`
   display: grid;
   height: 100vh;
   grid-template-columns: var(--sidebar-width) auto;
-  grid-template-rows: 100vh;
+  grid-template-rows: 100%;
 `
 
 const Page = styled.div`
