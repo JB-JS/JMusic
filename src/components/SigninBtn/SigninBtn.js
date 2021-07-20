@@ -43,9 +43,10 @@ const SigninBtn = ({ width = '100%' }) => {
           const isLoggedIn = e.isSignedIn()
           const access_token = e.getAuthResponse().access_token
 
+          window.auth = googleAuth
+
           dispatch(
             signin({
-              auth: googleAuth.signOut,
               displayName,
               photoURL,
               isLoggedIn,

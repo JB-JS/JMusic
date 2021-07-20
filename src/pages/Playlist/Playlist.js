@@ -14,8 +14,6 @@ const Thumbnail = styled.img`
 
 const InfoContainer = styled.div`
   padding: 2.5rem;
-  overflow: auto;
-  height: 100%;
 `
 
 const ItemHead = styled.div`
@@ -256,7 +254,6 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
       dispatch({ type: 'SUCCESS', datas })
     } catch (error) {
-      console.log(error)
       dispatch({ type: 'ERROR', error })
     }
   }, [getPlaylist])

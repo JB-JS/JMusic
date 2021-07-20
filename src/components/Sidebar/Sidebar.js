@@ -72,7 +72,7 @@ const Menu = styled(NavLink)`
 `
 
 const Sidebar = ({ playlists, setPlaylists }) => {
-  const { displayName, photoURL, isLoggedIn, access_token } = useSelector(
+  const { displayName, photoURL, isLoggedIn, access_token, auth } = useSelector(
     (state) => state.user
   )
 
@@ -88,10 +88,9 @@ const Sidebar = ({ playlists, setPlaylists }) => {
         const {
           data: { items },
         } = await ytApi.getPlaylists(access_token)
+
         setPlaylists(items)
-      } catch (error) {
-        console.log(error)
-      }
+      } catch (error) {}
     }
 
     isLoggedIn && fetchPlaylists()

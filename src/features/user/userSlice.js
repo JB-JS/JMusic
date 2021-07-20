@@ -19,8 +19,9 @@ export const userSlice = createSlice({
     },
 
     signOut: (state) => {
+      localStorage.removeItem('user')
+
       return {
-        auth: null,
         displayName: null,
         photoURL: null,
         access_token: null,

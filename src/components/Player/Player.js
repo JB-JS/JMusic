@@ -433,11 +433,19 @@ const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
   }, [playerState, currentTime])
 
   useEffect(() => {
+    const unload = (e) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+
     window.addEventListener('mouseup', onMouseUp)
     window.addEventListener('mouseup', onMouseUpAtVideo)
+    window.addEventListener('beforeunload', unload)
+
     return () => {
       window.removeEventListener('moseup', onMouseUp)
       window.removeEventListener('mouseup', onMouseUpAtVideo)
+      window.removeEventListener('beforeunload', unload)
     }
   })
 

@@ -85,9 +85,16 @@ const VideoInfoContainer = styled.div`
 
 const ChannelTitle = styled.span``
 
+const VideoThumbnail = styled.div`
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgb(66, 66, 66);
+  border-radius: 2px;
+`
+
 const Thumbnail = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 2px;
 `
@@ -264,9 +271,9 @@ const Playerbar = ({
 
       <ControlItem style={{ justifyContent: 'center' }}>
         <VideoInfoContainer>
-          <div>
+          <VideoThumbnail>
             <Thumbnail src={thumbnail} alt={title} />
-          </div>
+          </VideoThumbnail>
           <VideoInfo>
             <Title href="/">{title}</Title>
             <Info>
