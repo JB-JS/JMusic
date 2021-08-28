@@ -15,6 +15,7 @@ const Video = styled.div`
   transform: ${(props) =>
     props.show ? 'translate3d(0, 0, 0)' : 'translate3d(0, 100vh, 0)'};
   transition: transform 0.3s;
+  z-index: 10;
   & > div:first-child {
     flex: 1;
     height: 100%;
@@ -62,7 +63,7 @@ const YtVideo = ({
           },
         }}
       />
-      )<div></div>
+      <div></div>
     </Video>
   )
 }

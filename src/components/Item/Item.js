@@ -2,19 +2,20 @@ import styled from 'styled-components'
 import Icon from '../Icon'
 
 const ListItem = styled.li`
+  position: relative;
   width: calc(25% - 1rem);
   margin: 0 0.5rem 2.5rem;
+  cursor: pointer;
 `
 
 const Content = styled.div`
   display: flex;
   margin-top: 0.75rem;
   margin-bottom: 0.25rem;
+  margin: 0.75rem 2rem 0.25rem 0;
 `
 
-const ImgContainer = styled.div`
-  cursor: pointer;
-`
+const ImgContainer = styled.div``
 
 const Title = styled.h3`
   display: -webkit-box;
@@ -47,6 +48,7 @@ const Seperator = styled.span`
 
 const Item = ({
   onClick,
+  onShowModal,
   rank,
   data: {
     id,
@@ -60,8 +62,8 @@ const Item = ({
   },
 }) => {
   return (
-    <ListItem onClick={onClick} data-videoid={videoId || id}>
-      <ImgContainer>
+    <ListItem>
+      <ImgContainer onClick={onClick} data-videoid={videoId || id}>
         <Img src={url} alt={title} />
       </ImgContainer>
       <Content>
@@ -72,12 +74,16 @@ const Item = ({
         <Title dangerouslySetInnerHTML={{ __html: title }} />
         <Icon
           name="playlist"
+          onClick={onShowModal}
           style={{
+            position: 'absolute',
+            right: '0',
             width: '24px',
             height: '24px',
             fill: 'var(--system-primary)',
             marginLeft: 'auto',
-            cursor: 'pointer',
+
+            zIndex: 2,
           }}
         />
       </Content>

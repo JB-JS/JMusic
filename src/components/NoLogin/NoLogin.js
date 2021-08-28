@@ -1,4 +1,6 @@
 import React from 'react'
+import { useState } from 'react'
+import { useStore } from 'react-redux'
 import styled from 'styled-components'
 import SigninBtn from '../SigninBtn'
 
@@ -29,6 +31,7 @@ const ImgContainer = styled.div`
   img {
     width: 100%;
     max-width: 1680px;
+    object-fit: cover;
   }
 `
 

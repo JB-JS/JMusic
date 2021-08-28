@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useReducer, useRef } from 'react'
-import { toHMS } from '../../lib/utils/helper'
+import { toHMS } from '../../lib/utils'
 import Playerbar from '../Playerbar'
 import { ytApi } from '../../lib/api/api'
 import volumeStorage from '../../lib/storage/volumeStorage'

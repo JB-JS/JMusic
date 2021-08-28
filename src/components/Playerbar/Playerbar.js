@@ -30,6 +30,7 @@ const Container = styled.div`
   background-color: var(--player-bg);
   backdrop-filter: saturate(50%) blur(20px);
   color: var(--system-primary);
+  z-index: 100;
   &:hover ${CircleContainer} {
     display: flex;
   }

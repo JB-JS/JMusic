@@ -9,6 +9,7 @@ import { ytApi } from '../../lib/api/api'
 import PlaylistItems from '../PlaylistItems'
 import { signOut } from '../../features/user/userSlice'
 import { useDispatch } from 'react-redux'
+import { loading, success } from '../../features/playlists/playlistsSlice'
 
 const Aside = styled.aside`
   display: grid;
@@ -71,10 +72,11 @@ const Menu = styled(NavLink)`
   }
 `
 
-const Sidebar = ({ playlists, setPlaylists }) => {
-  const { displayName, photoURL, isLoggedIn, access_token, auth } = useSelector(
+const Sidebar = () => {
+  const { displayName, photoURL, isLoggedIn, access_token } = useSelector(
     (state) => state.user
   )
+  const { playlists } = useSelector((state) => state.playlists)
 
   const dispatch = useDispatch()
 
@@ -84,17 +86,24 @@ const Sidebar = ({ playlists, setPlaylists }) => {
 
   useEffect(() => {
     const fetchPlaylists = async () => {
+      dispatch(loading())
+
       try {
         const {
           data: { items },
         } = await ytApi.getPlaylists(access_token)
 
-        setPlaylists(items)
-      } catch (error) {}
+        dispatch(success(items))
+      } catch (err) {
+        console.log(err.response, window.googleUser)
+        if (err.response.status === 401) {
+          // window.googleUser.reloadAuthResponse()
+        }
+      }
     }
 
     isLoggedIn && fetchPlaylists()
-  }, [isLoggedIn, setPlaylists, access_token])
+  }, [isLoggedIn, access_token])
 
   return (
     <Aside>
@@ -131,7 +140,7 @@ const Sidebar = ({ playlists, setPlaylists }) => {
           </li>
         </ul>
 
-        {isLoggedIn && playlists && playlists.length > 0 && (
+        {isLoggedIn && playlists.length > 0 && (
           <PlaylistItems title="플레이리스트" items={playlists} />
         )}
       </Nav>

@@ -44,6 +44,7 @@ const SigninBtn = ({ width = '100%' }) => {
           const access_token = e.getAuthResponse().access_token
 
           window.auth = googleAuth
+          window.googleUser = e
 
           dispatch(
             signin({

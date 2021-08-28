@@ -16,42 +16,51 @@ const authApi = axios.create({
 })
 
 export const ytApi = {
-  getVideoTime(id, token) {
+  getVideoTime(id, access_token) {
     return axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
         part: 'contentDetails',
         fields: 'items(contentDetails(duration))',
-        access_token: token,
         id,
+        access_token,
       },
     })
   },
 
-  getPlaylistItems(playlistId, token) {
+  getPlaylistItems(playlistId, access_token) {
     return authApi.get('playlistItems', {
       params: {
         playlistId,
         max_results: 50,
-        access_token: token,
+        access_token,
       },
     })
   },
 
-  getPlaylistsById(id, token) {
+  removePlaylistItems(id, access_token) {
+    return axios.delete('https://www.googleapis.com/youtube/v3/playlistItems', {
+      params: {
+        id,
+        access_token,
+      },
+    })
+  },
+
+  getPlaylistsById(id, access_token) {
     return authApi.get('playlists', {
       params: {
         id,
-        access_token: token,
+        access_token,
       },
     })
   },
 
-  getPlaylists(token) {
+  getPlaylists(access_token) {
     return authApi.get('playlists', {
       params: {
         mine: true,
         max_results: 50,
-        access_token: token,
+        access_token,
       },
     })
   },
@@ -75,14 +84,15 @@ export const ytApi = {
     })
   },
 
-  search(q) {
-    return api.get('search', {
+  search(q, access_token) {
+    return authApi.get('search', {
       params: {
         q,
         maxResults: 20,
         type: 'video',
         videoEmbeddable: true,
         videoCategoryId: 10,
+        access_token,
       },
     })
   },

@@ -12,6 +12,8 @@ import { ReactComponent as google } from './google.svg'
 import { ReactComponent as viewRect } from './viewRect.svg'
 import { ReactComponent as upArrow } from './upArrow.svg'
 import { ReactComponent as playlist } from './playlist.svg'
+import { ReactComponent as playlistRemove } from './playlistRemove.svg'
+import { ReactComponent as playlistAdd } from './playlistAdd.svg'
 
 export {
   search,
@@ -28,4 +30,6 @@ export {
   google,
   viewRect,
   playlist,
+  playlistRemove,
+  playlistAdd,
 }

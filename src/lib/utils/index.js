@@ -1,3 +1,5 @@
+import { css } from 'styled-components'
+
 export const toHMS = (duration) => {
   const minute = Math.floor((duration / 60) % 60)
   const hour = Math.floor(duration / 3600)
@@ -17,3 +19,18 @@ export const HourMinute = (duration) => {
   if (duration === 0) return '0초'
   return `${hour > 0 ? `${hour}시간` : ''} ${minute > 0 ? `${minute}분` : ''}`
 }
+
+const sizes = {
+  desktop: 1024,
+  mobile: 500,
+}
+
+export const media = Object.keys(sizes).reduce((acc, label) => {
+  acc[label] = (...args) => css`
+    @media (max-width: ${sizes[label]}) {
+      ${css(...args)}
+    }
+  `
+
+  return acc
+}, {})

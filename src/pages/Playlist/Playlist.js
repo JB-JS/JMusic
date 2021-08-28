@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useReducer } from 'react'
 import styled from 'styled-components'
 import Icon from '../../components/Icon'
 import { ytApi } from '../../lib/api/api'
-import { HourMinute } from '../../lib/utils/helper'
+import { HourMinute } from '../../lib/utils'
 import { useSelector } from 'react-redux'
+import { media } from '../../lib/utils/index'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -83,6 +84,12 @@ const Table = styled.table`
   border-collapse: inherit;
   border-spacing: 0px;
   table-layout: fixed;
+
+  & > thead {
+    @media (max-width: 1040px) {
+      display: none;
+    }
+  }
   ${Thead}:not(:first-child) {
     position: relative;
 
@@ -120,8 +127,14 @@ const Overlay = styled.div`
 
 const TbodyRow = styled.tr`
   height: 54px;
-  border: 1px solid #fff;
   background: ${(props) => props.even && 'var(--musicItem-even-bg)'};
+
+  & > td:nth-child(2),
+  & > td:nth-child(3) {
+    @media (max-width: 1040px) {
+      display: none;
+    }
+  }
 
   > td:first-child {
     padding-left: 0.375rem;
@@ -129,6 +142,7 @@ const TbodyRow = styled.tr`
 
   > td:last-child {
     border-radius: 0 5px 5px 0;
+    padding-right: 18px;
   }
 
   &:hover {
@@ -146,13 +160,6 @@ const MusicData = styled.td`
   line-height: 54px;
   padding-right: 0.625rem;
   overflow: hidden;
-  h2 {
-    font-size: 0.8125rem;
-    font-weight: normal;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
 `
 
 const ImgContainer = styled.div`
@@ -161,6 +168,21 @@ const ImgContainer = styled.div`
   height: 40px;
   margin-right: 1.25rem;
   cursor: pointer;
+`
+
+const ItemTitle = styled.h2`
+  font-size: 0.8125rem;
+  font-weight: normal;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`
+
+const Artist = styled.div`
+  display: none;
+  ${media.desktop`
+    display: block  
+  `}
 `
 
 const initialState = {
@@ -180,6 +202,19 @@ function reducer(state, action) {
     case 'ERROR':
       return { ...state, isLoading: false, error: action.error }
 
+    case 'REMOVE_PLAYLISTITEM':
+      return {
+        ...state,
+        datas: {
+          ...state.datas,
+          itemData: {
+            items: state.datas.itemData.items.filter(
+              (item) => item.id !== action.payload.id
+            ),
+          },
+        },
+      }
+
     default:
       throw new Error(`is not Valid Action type: ${action.type}`)
   }
@@ -189,6 +224,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const playlistId = match.params.playlistId
 
   const [state, dispatch] = useReducer(reducer, initialState)
+
   const { access_token } = useSelector((state) => state.user)
 
   const { loading, error, datas } = state
@@ -216,11 +252,13 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         .filter((el) => el.data.items.length > 0)
         .map((el) => {
           const duration = el.data.items[0].contentDetails.duration
+
           const [min, sec] = duration
             .substring(2, duration.length - 1)
             .split('M')
             .join('')
-          return { duration: `${min}:${sec >= 10 ? sec : `0${sec}`}` }
+
+          return { duration: `${min}:${sec >= 10 ? sec : `0${sec || '0'}`}` }
         })
 
     let time = 0
@@ -272,6 +310,19 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
       playlistId,
       isPlayed: true,
       type: 'playlist',
+    })
+  }
+
+  const onPlaylistRemoveItem = (e) => {
+    const id = e.currentTarget.dataset.itemid
+
+    ytApi.removePlaylistItems(id, access_token)
+
+    dispatch({
+      type: 'REMOVE_PLAYLISTITEM',
+      payload: {
+        id,
+      },
     })
   }
 
@@ -344,7 +395,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     노래
                   </Thead>
                   <Thead width="25%">앨범</Thead>
-                  <Thead width="30%">아티스트</Thead>
+                  <Thead width="25%">아티스트</Thead>
                   <Thead>시간</Thead>
                 </tr>
               </thead>
@@ -370,13 +421,37 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                           />
                         </Overlay>
                       </ImgContainer>
-                      <h2>{item.snippet.title}</h2>
+                      <div>
+                        <ItemTitle>{item.snippet.title}</ItemTitle>
+                        <Artist>{item.snippet.videoOwnerChannelTitle}</Artist>
+                      </div>
                     </MusicData>
+                    <td></td>
                     <td>
                       <div>{item.snippet.videoOwnerChannelTitle}</div>
                     </td>
-                    <td></td>
-                    <td>{item.duration}</td>
+                    <td>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                        }}
+                      >
+                        {item.duration}
+                        {/* <Icon
+                          name="playlistRemove"
+                          width="24"
+                          height="24"
+                          data-itemid={item.id}
+                          onClick={onPlaylistRemoveItem}
+                          style={{
+                            fill: 'var(--theme-color)',
+                            marginLeft: '0.5rem',
+                            cursor: 'pointer',
+                          }}
+                        /> */}
+                      </div>
+                    </td>
                   </TbodyRow>
                 ))}
               </Tbody>

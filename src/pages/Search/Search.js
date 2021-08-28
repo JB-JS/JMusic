@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react'
 import Grid from '../../components/Grid'
 import qs from 'qs'
 import { ytApi } from '../../lib/api/api'
+import { useSelector } from 'react-redux'
 
 const Search = ({ location, onClick }) => {
   const [items, setItems] = useState(null)
   const [, setError] = useState(false)
+
+  const { access_token } = useSelector((state) => state.user)
 
   useEffect(() => {
     const query = qs.parse(location.search, {
@@ -21,7 +24,7 @@ const Search = ({ location, onClick }) => {
       try {
         const {
           data: { items },
-        } = await ytApi.search(query.keyword)
+        } = await ytApi.search(query.keyword, access_token)
 
         setItems(items)
 

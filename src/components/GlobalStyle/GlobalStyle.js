@@ -28,6 +28,7 @@ const GlobalStyle = createGlobalStyle`
     --playlist-shadow-color: rgba(0, 0, 0, .1);
     --sound-progress-bg: #f00;
     --musicItem-even-bg: rgba(0, 0, 0, 0.02);
+    --playlist-item-bg: rgba(255, 255, 255, 0.05);
     --tracklist-hover-bg: rgba(0, 0, 0, 0.06);
     --googleBtn-color: #fff; 
   }

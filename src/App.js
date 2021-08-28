@@ -31,8 +31,6 @@ const App = () => {
     type: 'video',
   })
 
-  const [playlists, setPlaylists] = useState([])
-
   const { playlistId, videoId, isPlayed, type } = video
 
   const { isLoggedIn } = useSelector((state) => state.user)
@@ -50,13 +48,14 @@ const App = () => {
       <BrowserRouter>
         <GlobalStyle />
         <GridContainer>
-          <Sidebar playlists={playlists} setPlaylists={setPlaylists} />
+          <Sidebar />
           <Page played={isPlayed}>
             <Switch>
               {!isLoggedIn && (
                 <Route
                   path={['/', '/search', '/playlist/:playlistId']}
                   render={() => <NoLogin />}
+                  exact
                 />
               )}
               <Route
@@ -68,12 +67,14 @@ const App = () => {
               />
               <Route
                 path="/search"
+                exact
                 render={(routeProps) => (
                   <Search {...routeProps} onClick={onClick} />
                 )}
               />
               <Route
                 path="/playlist/:playlistId"
+                exact
                 render={(routeProps) => (
                   <Playlist
                     {...routeProps}
