@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import AddPlaylistModal from '../AddPlaylistModal'
+// import AddPlaylistModal from '../AddPlaylistModal'
 import styled from 'styled-components'
 import Item from '../Item'
 
@@ -65,9 +65,9 @@ const Grid = ({ items, title, onClick }) => {
           <div>
             <Title>{title}</Title>
           </div>
-          {isModal && (
+          {/* {isModal && (
             <AddPlaylistModal onHideModal={onHideModal} geometry={geometry} />
-          )}
+          )} */}
           <List>
             {items.map((item, idx) => (
               <Item
