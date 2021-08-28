@@ -31,7 +31,12 @@ const GlobalStyle = createGlobalStyle`
     --playlist-item-bg: rgba(255, 255, 255, 0.05);
     --tracklist-hover-bg: rgba(0, 0, 0, 0.06);
     --googleBtn-color: #fff; 
+
+    @media (max-width: 760px) {
+      --sidebar-width: 33vw;
+    }
   }
+
   @media (prefers-color-scheme: dark) {
     :root {
       --theme-color: #fff;

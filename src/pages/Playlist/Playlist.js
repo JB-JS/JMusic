@@ -37,11 +37,13 @@ const HeadThumbnail = styled.img`
 const HeadContent = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  margin-left: 2.125rem;
+  ${media.desktop`
   align-items: center;
-  @media (min-width: 1000px) {
-    margin-left: 2.125rem;
-    align-items: flex-start;
-  }
+  margin: 1rem 0 0 0;
+  `}
+
   font-size: 0.8125rem;
   font-weight: 200;
   color: var(--system-primary);
@@ -157,9 +159,9 @@ const TbodyRow = styled.tr`
 const MusicData = styled.td`
   display: flex;
   align-items: center;
-  line-height: 54px;
   padding-right: 0.625rem;
   overflow: hidden;
+  height: 54px;
 `
 
 const ImgContainer = styled.div`
@@ -171,18 +173,19 @@ const ImgContainer = styled.div`
 `
 
 const ItemTitle = styled.h2`
-  font-size: 0.8125rem;
-  font-weight: normal;
+  font-size: 13px;
+  font-weight: 400;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  color: rgba(255, 255, 255, 0.9);
 `
 
 const Artist = styled.div`
   display: none;
-  ${media.desktop`
-    display: block  
-  `}
+  @media (max-width: 1040px) {
+    display: block;
+  }
 `
 
 const initialState = {
@@ -423,7 +426,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                       </ImgContainer>
                       <div>
                         <ItemTitle>{item.snippet.title}</ItemTitle>
-                        <Artist>{item.snippet.videoOwnerChannelTitle}</Artist>
+                        <Artist>
+                          <span>{item.snippet.videoOwnerChannelTitle}</span>
+                        </Artist>
                       </div>
                     </MusicData>
                     <td></td>

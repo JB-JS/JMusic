@@ -10,12 +10,15 @@ import PlaylistItems from '../PlaylistItems'
 import { signOut } from '../../features/user/userSlice'
 import { useDispatch } from 'react-redux'
 import { loading, success } from '../../features/playlists/playlistsSlice'
+import { media } from '../../lib/utils/index'
+import Avatar from '../Avatar'
 
 const Aside = styled.aside`
   display: grid;
   grid-template-rows: 50px auto 1fr auto;
   border-right: 1px solid var(--sidebar-border-color);
   background-color: var(--sidebar-bg);
+  max-width: 280px;
 `
 
 const Logo = styled.div`
@@ -50,15 +53,6 @@ const LogOut = styled.a`
   font-size: 0.8125rem;
   color: var(--red);
   cursor: pointer;
-`
-
-const Avatar = styled.img`
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 50%;
-  background: rgb(210, 210, 210);
-  object-fit: cover;
-  margin-right: 0.75rem;
 `
 
 const Menu = styled(NavLink)`

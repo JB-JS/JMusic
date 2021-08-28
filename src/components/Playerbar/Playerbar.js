@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { media } from '../../lib/utils/index'
 import Icon from '../Icon/Icon'
 
 const CircleContainer = styled.div`
@@ -23,8 +24,8 @@ const Container = styled.div`
   position: fixed;
   bottom: 0;
   right: 0;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  justify-content: space-between;
   width: calc(100% - var(--sidebar-width));
   height: var(--player-bar-height);
   background-color: var(--player-bg);
@@ -38,12 +39,20 @@ const Container = styled.div`
   &:hover ${ProgressContainer} {
     height: 4px;
   }
+
+  ${media.mobile`width: 100%;`}
 `
 
 const ControlItem = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
+
+  & > div:nth-child(4) {
+    @media (max-width: 1040px) {
+      display: none;
+    }
+  }
 `
 
 const SvgContainer = styled.div`
@@ -66,6 +75,10 @@ const SvgStyle = {
 const TimeInfo = styled.span`
   font-size: 0.75rem;
   color: #aaa;
+
+  @media (max-width: 1040px) {
+    display: none;
+  }
 `
 
 const HoverTimeInfo = styled.div`
@@ -154,6 +167,9 @@ const SliderBar = styled.div`
   width: 64px;
   cursor: pointer;
   user-select: none;
+  @media (max-width: 1040px) {
+    display: none;
+  }
 `
 
 const SoundCircle = styled.div`
@@ -214,7 +230,7 @@ const Playerbar = ({
 }) => {
   return (
     <Container>
-      <ControlItem style={{ color: 'rgb(144, 144, 144)', width: '292px' }}>
+      <ControlItem style={{ color: 'rgb(144, 144, 144)' }}>
         <SvgContainer margin="0 0 0 0.5rem">
           <Icon
             name="upArrow"
@@ -286,9 +302,7 @@ const Playerbar = ({
         </VideoInfoContainer>
       </ControlItem>
 
-      <ControlItem
-        style={{ color: '#fff', width: '292px', justifyContent: 'flex-end' }}
-      >
+      <ControlItem style={{ color: '#fff', justifyContent: 'flex-end' }}>
         <TimeInfo>
           {start} / {end}
         </TimeInfo>

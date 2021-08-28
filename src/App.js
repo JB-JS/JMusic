@@ -9,12 +9,17 @@ import Playlist from './pages/Playlist'
 import Player from './components/Player'
 import NoLogin from './components/NoLogin'
 import { useSelector } from 'react-redux'
+import { media } from './lib/utils/index'
+import { useMediaQuery } from 'react-responsive'
+import Header from './components/Header'
 
 const GridContainer = styled.div`
   display: grid;
   height: 100vh;
-  grid-template-columns: var(--sidebar-width) auto;
+  grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: 100%;
+
+  ${media.mobile`grid-template-columns: 1fr; grid-template-rows: 1fr auto;`}
 `
 
 const Page = styled.div`
@@ -35,6 +40,8 @@ const App = () => {
 
   const { isLoggedIn } = useSelector((state) => state.user)
 
+  const isHeader = useMediaQuery({ query: '(max-width: 500px)' })
+
   const onClick = (e) => {
     setVideo({
       videoId: e.currentTarget.dataset.videoid,
@@ -48,7 +55,7 @@ const App = () => {
       <BrowserRouter>
         <GlobalStyle />
         <GridContainer>
-          <Sidebar />
+          {isHeader ? <Header /> : <Sidebar />}
           <Page played={isPlayed}>
             <Switch>
               {!isLoggedIn && (
