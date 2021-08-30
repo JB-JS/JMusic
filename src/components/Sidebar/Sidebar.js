@@ -24,6 +24,7 @@ const Aside = styled.aside`
     position: absolute;
     top: 44px;
     max-width: 100%;
+    width: 100%;
     height: ${(props) => (props.toggleSidebar ? 'calc(100vh - 44px)' : '0')};
     background-color: rgb(46, 46, 46);
     transition: height 0.5s;
@@ -43,7 +44,7 @@ const Logo = styled.div`
 
 const Nav = styled.nav`
   padding: 0 1.5625rem;
-  margin-top: 1rem;
+  margin: 1rem;
   overflow: auto;
 `
 
