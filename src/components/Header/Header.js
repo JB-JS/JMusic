@@ -1,6 +1,5 @@
 import React from 'react'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import Sidebar from '../Sidebar/Sidebar'
 
@@ -10,7 +9,7 @@ const StyledHeader = styled.header`
   align-items: center;
   height: 44px;
   padding: 0 2.5rem;
-  background-color: #333;
+  background-color: rgb(46, 46, 46);
 `
 
 const ToggleMenu = styled.div`
@@ -32,10 +31,7 @@ const LogoBlock = styled.div`
   transform: translate(-50%, -50%);
 `
 
-const AvatarBlock = styled.div``
-
 const Header = () => {
-  const { photoURL } = useSelector((state) => state.user)
   const [toggleSidebar, setToggleSidebar] = useState(false)
 
   const onClick = () => {
@@ -69,7 +65,7 @@ const Header = () => {
           </svg>
         </LogoBlock>
       </StyledHeader>
-      {toggleSidebar && <Sidebar />}
+      <Sidebar toggleSidebar={toggleSidebar} />
     </>
   )
 }

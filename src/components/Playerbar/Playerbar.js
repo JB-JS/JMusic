@@ -28,6 +28,7 @@ const Container = styled.div`
   justify-content: space-between;
   width: calc(100% - var(--sidebar-width));
   height: var(--player-bar-height);
+  padding: 0 1rem;
   background-color: var(--player-bg);
   backdrop-filter: saturate(50%) blur(20px);
   color: var(--system-primary);
@@ -40,7 +41,11 @@ const Container = styled.div`
     height: 4px;
   }
 
-  ${media.mobile`width: 100%;`}
+  & > div:first-child {
+    ${media.mobile`display: none;`}
+  }
+
+  ${media.mobile`width: 100%; `}
 `
 
 const ControlItem = styled.div`
@@ -48,7 +53,7 @@ const ControlItem = styled.div`
   align-items: center;
   height: 100%;
 
-  & > div:nth-child(4) {
+  &:nth-child(2) > div:nth-child(4) {
     @media (max-width: 1040px) {
       display: none;
     }
@@ -139,6 +144,7 @@ const ProgressPadding = styled.div`
 const Progress = styled.div`
   position: absolute;
   top: 0;
+  left: 0;
   width: 100%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -231,7 +237,7 @@ const Playerbar = ({
   return (
     <Container>
       <ControlItem style={{ color: 'rgb(144, 144, 144)' }}>
-        <SvgContainer margin="0 0 0 0.5rem">
+        <SvgContainer>
           <Icon
             name="upArrow"
             style={{
@@ -242,7 +248,7 @@ const Playerbar = ({
             onClick={toggleShowVideo}
           />
         </SvgContainer>
-        <SvgContainer margin="0 0 0 0.5rem">
+        <SvgContainer>
           {isLoop ? (
             <Icon
               name="oneRoop"
@@ -254,14 +260,14 @@ const Playerbar = ({
             <Icon name="roop" style={SvgStyle} onClick={onClickSetLoop} />
           )}
         </SvgContainer>
-        <SvgContainer margin="0 0 0 0.5rem">
+        <SvgContainer>
           <Icon
             name="shupple"
             style={{ ...SvgStyle, fill: isShuffle && 'var(--red)' }}
             onClick={onSetShuffle}
           />
         </SvgContainer>
-        <SvgContainer margin="0 0 0 0.5rem">
+        <SvgContainer>
           {isMuted ? (
             <Icon name="unmute" style={SvgStyle} onClick={onUnMute} />
           ) : (

@@ -19,7 +19,9 @@ const GridContainer = styled.div`
   grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: 100%;
 
-  ${media.mobile`grid-template-columns: 1fr; grid-template-rows: 1fr auto;`}
+  ${media.mobile`
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;`}
 `
 
 const Page = styled.div`

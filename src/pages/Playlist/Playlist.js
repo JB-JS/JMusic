@@ -83,14 +83,12 @@ const Thead = styled.th`
 
 const Table = styled.table`
   width: 100%;
-  border-collapse: inherit;
+  border-collapse: collapse;
   border-spacing: 0px;
   table-layout: fixed;
 
   & > thead {
-    @media (max-width: 1040px) {
-      display: none;
-    }
+    ${media.desktop`display: none;`}
   }
   ${Thead}:not(:first-child) {
     position: relative;
@@ -159,9 +157,11 @@ const TbodyRow = styled.tr`
 const MusicData = styled.td`
   display: flex;
   align-items: center;
-  padding-right: 0.625rem;
-  overflow: hidden;
   height: 54px;
+
+  & > div:nth-child(2) {
+    width: 50%;
+  }
 `
 
 const ImgContainer = styled.div`
@@ -185,6 +185,9 @@ const Artist = styled.div`
   display: none;
   @media (max-width: 1040px) {
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `
 
