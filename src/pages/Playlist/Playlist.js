@@ -5,6 +5,8 @@ import { ytApi } from '../../lib/api/api'
 import { HourMinute } from '../../lib/utils'
 import { useSelector } from 'react-redux'
 import { media } from '../../lib/utils/index'
+import { useState } from 'react'
+import Modal from '../../components/Modal/Modal'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -191,6 +193,73 @@ const Artist = styled.div`
   }
 `
 
+const EditBtn = styled.button`
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 30px;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  margin-left: 20px;
+  background: none;
+  cursor: pointer;
+  transition: color 0.5s, background 1s;
+  color: #fff;
+  &:hover {
+    background: #fff;
+    color: #000;
+  }
+`
+
+const ButtonBlock = styled.div`
+  display: flex;
+  margin-top: 20px;
+`
+
+const Title = styled.h2``
+
+const Form = styled.form`
+  & > div {
+    &:first-child {
+      padding: 24px 24px 0;
+    }
+
+    &:nth-child(2) {
+      padding: 32px 24px;
+
+      input {
+        background: none;
+      }
+    }
+  }
+`
+
+const ModalContent = styled.div`
+  & > div {
+    & > div {
+      &:nth-child(2) {
+        margin: 32px 0;
+      }
+    }
+
+    & > div:first-child {
+      position: relative;
+      & > label {
+        position: absolute;
+        left: 0;
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+`
+
+const ActionBtn = styled.div``
+
+const Underline = styled.div`
+  height: 2px;
+  background-color: rgb(66, 66, 66);
+`
+
 const initialState = {
   isLoading: false,
   datas: null,
@@ -230,6 +299,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const playlistId = match.params.playlistId
 
   const [state, dispatch] = useReducer(reducer, initialState)
+  const [isOpen, setIsOpen] = useState(false)
 
   const { access_token } = useSelector((state) => state.user)
 
@@ -369,28 +439,43 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
               {datas.listData.items[0].snippet.description && (
                 <p>{datas.listData.items[0].snippet.description}</p>
               )}
-              <div style={{ marginTop: 'auto' }}>
-                {datas.itemData.items.length > 0 && (
-                  <PlayBtn
-                    onClick={onClick}
-                    data-videoid={
-                      datas.itemData.items[0].snippet.resourceId.videoId
-                    }
-                    data-playlistid={playlistId}
-                  >
+              <ButtonBlock>
+                <div style={{ marginTop: 'auto' }}>
+                  {datas.itemData.items.length > 0 && (
+                    <PlayBtn
+                      onClick={onClick}
+                      data-videoid={
+                        datas.itemData.items[0].snippet.resourceId.videoId
+                      }
+                      data-playlistid={playlistId}
+                    >
+                      <Icon
+                        name="play"
+                        style={{
+                          fill: '#fff',
+                          width: '24px',
+                          height: '24px',
+                          marginRight: '0.25rem',
+                        }}
+                      />
+                      재생
+                    </PlayBtn>
+                  )}
+                </div>
+                <div>
+                  <EditBtn onClick={() => setIsOpen(true)}>
                     <Icon
-                      name="play"
+                      name="edit"
                       style={{
-                        fill: '#fff',
                         width: '24px',
                         height: '24px',
-                        marginRight: '0.25rem',
+                        marginRight: '8px',
                       }}
                     />
-                    재생
-                  </PlayBtn>
-                )}
-              </div>
+                    재생목록 수정
+                  </EditBtn>
+                </div>
+              </ButtonBlock>
             </HeadContent>
           </ItemHead>
           {datas.itemData.items.length > 0 && (
@@ -466,6 +551,35 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             </Table>
           )}
         </>
+      )}
+      {isOpen && (
+        <Modal>
+          <Form>
+            <div>
+              <Title>{datas && datas.listData.items[0].snippet.title}</Title>
+            </div>
+            <ModalContent>
+              <div>
+                <div>
+                  <input type="text" />
+                  <label htmlFor="">제목</label>
+                </div>
+                <Underline></Underline>
+              </div>
+              <div>
+                <div>
+                  <input type="text" />
+                  <label htmlFor="">설명</label>
+                </div>
+                <Underline></Underline>
+              </div>
+            </ModalContent>
+            <ActionBtn>
+              <button>취소</button>
+              <button type="submit">저장</button>
+            </ActionBtn>
+          </Form>
+        </Modal>
       )}
     </InfoContainer>
   )
