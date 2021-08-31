@@ -6,6 +6,8 @@ const StyledModal = styled.div`
   top: 50%;
   left: 50%;
   max-width: 704px;
+  width: 100%;
+  border: 1px solid rgb(255, 255, 255, 0.2);
   background: rgb(33, 33, 33);
   transform: translate(-50%, -50%);
   z-index: 10;

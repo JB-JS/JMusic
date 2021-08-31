@@ -221,7 +221,7 @@ const Title = styled.h2``
 const Form = styled.form`
   & > div {
     &:first-child {
-      padding: 24px 24px 0;
+      padding: 24px 24px;
     }
 
     &:nth-child(2) {
@@ -235,25 +235,48 @@ const Form = styled.form`
 `
 
 const ModalContent = styled.div`
+  border-top: 1px solid rgb(96, 96, 96);
+  border-bottom: 1px solid rgb(96, 96, 96);
   & > div {
+    margin: 32px 0;
     & > div {
-      &:nth-child(2) {
-        margin: 32px 0;
+      &:first-child {
+        position: relative;
+
+        & > label {
+          position: absolute;
+          left: 0;
+          color: rgba(255, 255, 255, 0.7);
+        }
       }
     }
 
     & > div:first-child {
-      position: relative;
-      & > label {
-        position: absolute;
-        left: 0;
-        color: rgba(255, 255, 255, 0.7);
-      }
     }
   }
 `
 
-const ActionBtn = styled.div``
+const ActionBtn = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+
+  & > button {
+    width: 75px;
+    height: 36px;
+    cursor: pointer;
+
+    &:first-child {
+      background: none;
+    }
+
+    &[type='submit'] {
+      background: #fff;
+      border-radius: 2px;
+      color: #000;
+    }
+  }
+`
 
 const Underline = styled.div`
   height: 2px;
