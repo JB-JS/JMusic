@@ -251,13 +251,15 @@ const ModalContent = styled.div`
         & > label {
           position: absolute;
           left: 0;
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(255, 255, 255, 0.7);
           font-weight: lighter;
+          font-size: 14px;
         }
       }
     }
 
-    & > div:first-child {
+    &:nth-child(2) > div:last-child {
+      position: absolute;
     }
   }
 `
@@ -290,6 +292,7 @@ const ActionBtn = styled.div`
 
 const Underline = styled.div`
   height: 2px;
+  margin-top: 3px;
   background-color: rgb(66, 66, 66);
 `
 
@@ -597,16 +600,16 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                 <div>
                   <input type="text" />
                   <label htmlFor="">제목</label>
+                  <Underline></Underline>
                 </div>
-                <Underline></Underline>
               </div>
               <div>
                 <Void>&nbsp;</Void>
                 <div>
                   <textarea type="text" />
                   <label htmlFor="">설명</label>
+                  <Underline></Underline>
                 </div>
-                <Underline></Underline>
               </div>
             </ModalContent>
             <ActionBtn>
