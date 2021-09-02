@@ -227,8 +227,13 @@ const Form = styled.form`
     &:nth-child(2) {
       padding: 32px 24px;
 
+      textarea,
       input {
+        width: 100%;
+        border: none;
         background: none;
+        resize: none;
+        outline: none;
       }
     }
   }
@@ -240,13 +245,14 @@ const ModalContent = styled.div`
   & > div {
     margin: 32px 0;
     & > div {
-      &:first-child {
+      &:nth-child(2) {
         position: relative;
 
         & > label {
           position: absolute;
           left: 0;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.6);
+          font-weight: lighter;
         }
       }
     }
@@ -254,6 +260,10 @@ const ModalContent = styled.div`
     & > div:first-child {
     }
   }
+`
+
+const Void = styled.div`
+  line-height: 20px;
 `
 
 const ActionBtn = styled.div`
@@ -583,6 +593,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             </div>
             <ModalContent>
               <div>
+                <Void>&nbsp;</Void>
                 <div>
                   <input type="text" />
                   <label htmlFor="">제목</label>
@@ -590,8 +601,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                 <Underline></Underline>
               </div>
               <div>
+                <Void>&nbsp;</Void>
                 <div>
-                  <input type="text" />
+                  <textarea type="text" />
                   <label htmlFor="">설명</label>
                 </div>
                 <Underline></Underline>

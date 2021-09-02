@@ -5,11 +5,12 @@ const StyledModal = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
-  max-width: 704px;
+  max-width: 480px;
   width: 100%;
   border: 1px solid rgb(255, 255, 255, 0.2);
   background: rgb(33, 33, 33);
   transform: translate(-50%, -50%);
+  font-family: 'Roboto', sans-serif;
   z-index: 10;
 `
 
