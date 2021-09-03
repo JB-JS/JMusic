@@ -242,26 +242,10 @@ const Form = styled.form`
 const ModalContent = styled.div`
   border-top: 1px solid rgb(96, 96, 96);
   border-bottom: 1px solid rgb(96, 96, 96);
-  & > div {
-    margin: 32px 0;
-    & > div {
-      &:nth-child(2) {
-        position: relative;
+`
 
-        & > label {
-          position: absolute;
-          left: 0;
-          color: rgba(255, 255, 255, 0.7);
-          font-weight: lighter;
-          font-size: 14px;
-        }
-      }
-    }
-
-    &:nth-child(2) > div:last-child {
-      position: absolute;
-    }
-  }
+const InputBlock = styled.div`
+  position: relative;
 `
 
 const Void = styled.div`
@@ -290,10 +274,33 @@ const ActionBtn = styled.div`
   }
 `
 
+const Description = styled.div`
+  margin: 32px 0 40px;
+
+  ${InputBlock} {
+    line-height: 1.6;
+  }
+`
+
 const Underline = styled.div`
   height: 2px;
   margin-top: 3px;
   background-color: rgb(66, 66, 66);
+`
+
+const Label = styled.label`
+  position: absolute;
+  left: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: lighter;
+  font-size: 14px;
+`
+
+const TextareaBlock = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
 `
 
 const initialState = {
@@ -597,20 +604,23 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             <ModalContent>
               <div>
                 <Void>&nbsp;</Void>
-                <div>
+                <InputBlock>
                   <input type="text" />
-                  <label htmlFor="">제목</label>
+                  <Label htmlFor="">제목</Label>
                   <Underline></Underline>
-                </div>
+                </InputBlock>
               </div>
-              <div>
+              <Description>
                 <Void>&nbsp;</Void>
-                <div>
-                  <textarea type="text" />
-                  <label htmlFor="">설명</label>
-                  <Underline></Underline>
-                </div>
-              </div>
+                <InputBlock>
+                  <Void>&nbsp;</Void>
+                  <TextareaBlock>
+                    <Label htmlFor="">설명</Label>
+                    <textarea type="text" />
+                  </TextareaBlock>
+                </InputBlock>
+                <Underline></Underline>
+              </Description>
             </ModalContent>
             <ActionBtn>
               <button>취소</button>
