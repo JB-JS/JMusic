@@ -83,6 +83,10 @@ const GlobalStyle = createGlobalStyle`
     border: none;
   }
 
+  textarea {
+    font-size: inherit;
+  }
+
   a {
     color: inherit;
     text-decoration: none;

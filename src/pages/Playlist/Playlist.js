@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useReducer } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import Icon from '../../components/Icon'
 import { ytApi } from '../../lib/api/api'
 import { HourMinute } from '../../lib/utils'
@@ -227,6 +227,12 @@ const Form = styled.form`
     &:nth-child(2) {
       padding: 32px 24px;
 
+      textarea {
+        font-size: 14px;
+        font-family: inherit;
+        font-weight: normal;
+      }
+
       textarea,
       input {
         width: 100%;
@@ -283,9 +289,23 @@ const Description = styled.div`
 `
 
 const Underline = styled.div`
+  position: relative;
   height: 2px;
   margin-top: 3px;
   background-color: rgb(66, 66, 66);
+
+  & > div {
+    height: 100%;
+    background: rgb(62, 166, 255);
+    transform-origin: center;
+    transform: scale(0);
+    ${(props) =>
+      props.isFocused &&
+      css`
+        transform: none;
+        transition: transform 0.5s;
+      `}
+  }
 `
 
 const Label = styled.label`
@@ -293,7 +313,19 @@ const Label = styled.label`
   left: 0;
   color: rgba(255, 255, 255, 0.7);
   font-weight: lighter;
-  font-size: 14px;
+  font-size: 1rem;
+  transition: 0.25s;
+  transform-origin: left top;
+  ${(props) =>
+    props.isFocused &&
+    css`
+      color: rgb(62, 166, 255);
+    `}
+  ${(props) =>
+    props.isValue &&
+    css`
+      transform: translateY(-75%) scale(0.75);
+    `}
 `
 
 const TextareaBlock = styled.div`
@@ -343,9 +375,15 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isOpen, setIsOpen] = useState(false)
+  const [inputs, setInputs] = useState({
+    title: '',
+    description: '',
+    isFocus: { title: false, description: false },
+  })
 
   const { access_token } = useSelector((state) => state.user)
 
+  const { title, description, isFocus } = inputs
   const { loading, error, datas } = state
 
   const getPlaylist = useCallback(async () => {
@@ -444,6 +482,47 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
       },
     })
   }
+
+  const onChange = useCallback((e) => {
+    const {
+      target: { name, value },
+    } = e
+
+    setInputs((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }, [])
+
+  const onFocus = useCallback((e) => {
+    const {
+      target: { name },
+    } = e
+
+    console.log('inputs')
+
+    setInputs((prevState) => ({
+      ...prevState,
+      isFocus: {
+        ...prevState.isFocus,
+        [name]: true,
+      },
+    }))
+  })
+
+  const onBlur = useCallback((e) => {
+    const {
+      target: { name },
+    } = e
+
+    setInputs((prevState) => ({
+      ...prevState,
+      isFocus: {
+        ...prevState.isFocus,
+        [name]: false,
+      },
+    }))
+  }, [])
 
   useEffect(() => {
     fetchData()
@@ -605,9 +684,28 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
               <div>
                 <Void>&nbsp;</Void>
                 <InputBlock>
-                  <input type="text" />
-                  <Label htmlFor="">제목</Label>
-                  <Underline></Underline>
+                  <Label
+                    htmlFor="title"
+                    isValue={title}
+                    isFocused={isFocus.title}
+                  >
+                    제목
+                  </Label>
+                  <input
+                    type="text"
+                    value={title}
+                    id="title"
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    onFocus={onFocus}
+                    name="title"
+                    autoComplete="off"
+                  />
+                  {console.log}
+
+                  <Underline isFocused={isFocus.title}>
+                    <div></div>
+                  </Underline>
                 </InputBlock>
               </div>
               <Description>
@@ -615,11 +713,28 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                 <InputBlock>
                   <Void>&nbsp;</Void>
                   <TextareaBlock>
-                    <Label htmlFor="">설명</Label>
-                    <textarea type="text" />
+                    <Label
+                      htmlFor="description"
+                      isValue={description}
+                      isFocused={isFocus.description}
+                    >
+                      설명
+                    </Label>
+                    <textarea
+                      type="text"
+                      id="description"
+                      value={description}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      onFocus={onFocus}
+                      name="description"
+                      autoComplete="off"
+                    />
                   </TextareaBlock>
                 </InputBlock>
-                <Underline></Underline>
+                <Underline isFocused={isFocus.description}>
+                  <div></div>
+                </Underline>
               </Description>
             </ModalContent>
             <ActionBtn>
