@@ -31,6 +31,10 @@ const Aside = styled.aside`
     transition: height 0.5s;
     overflow: hidden;
     z-index: 100;
+
+    & > div:first-child {
+      display: none;
+    }
   `}
 `
 
