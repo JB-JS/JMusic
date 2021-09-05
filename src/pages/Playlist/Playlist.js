@@ -316,11 +316,14 @@ const Label = styled.label`
   font-size: 1rem;
   transition: 0.25s;
   transform-origin: left top;
+
   ${(props) =>
+    props.isValue &&
     props.isFocused &&
     css`
       color: rgb(62, 166, 255);
     `}
+
   ${(props) =>
     props.isValue &&
     css`
