@@ -527,6 +527,12 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     }))
   }, [])
 
+  const onModalClose = useCallback(() => {
+    setIsOpen(false)
+  }, [])
+
+  const onSave = useCallback(() => {}, [])
+
   useEffect(() => {
     fetchData()
   }, [fetchData])
@@ -741,8 +747,10 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
               </Description>
             </ModalContent>
             <ActionBtn>
-              <button>취소</button>
-              <button type="submit">저장</button>
+              <button type="button" onClick={onModalClose}>
+                취소
+              </button>
+              <button onClick={onSave}>저장</button>
             </ActionBtn>
           </Form>
         </Modal>

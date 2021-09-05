@@ -19,6 +19,7 @@ const Aside = styled.aside`
   border-right: 1px solid var(--sidebar-border-color);
   background-color: var(--sidebar-bg);
   max-width: 280px;
+  min-height: -webkit-fill-available;
 
   ${media.mobile`
     position: absolute;
