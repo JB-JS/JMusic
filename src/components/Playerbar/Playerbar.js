@@ -24,8 +24,9 @@ const Container = styled.div`
   position: fixed;
   bottom: 0;
   right: 0;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 0fr 1fr 0fr;
+  grid-template-areas: 'start middle end';
   width: calc(100% - var(--sidebar-width));
   height: var(--player-bar-height);
   padding: 0 1rem;
@@ -52,6 +53,21 @@ const ControlItem = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
+
+  &:first-child {
+    grid-area: start;
+  }
+
+  &:nth-child(2) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: middle;
+  }
+
+  &:nth-child(3) {
+    grid-area: end;
+  }
 
   &:nth-child(2) > div:nth-child(4) {
     @media (max-width: 1040px) {
@@ -119,18 +135,25 @@ const Thumbnail = styled.img`
 `
 
 const VideoInfo = styled.div`
+  display: flex;
+  flex-direction: column;
   margin-left: 1rem;
 `
 
 const Title = styled.a`
+  display: block;
   text-overflow: ellipsis;
   overflow: hidden;
+  white-space: nowrap;
   font-size: 0.8125rem;
   color: var(--player-title-color);
-  white-space: nowrap;
 `
 
 const Info = styled.div`
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   color: var(--player-desc-color);
   font-size: 0.8125rem;
 `
@@ -236,7 +259,7 @@ const Playerbar = ({
 }) => {
   return (
     <Container>
-      <ControlItem style={{ color: 'rgb(144, 144, 144)' }}>
+      <ControlItem>
         <SvgContainer>
           <Icon
             name="upArrow"
@@ -292,7 +315,7 @@ const Playerbar = ({
         </SliderBar>
       </ControlItem>
 
-      <ControlItem style={{ justifyContent: 'center' }}>
+      <ControlItem>
         <VideoInfoContainer>
           <VideoThumbnail>
             <Thumbnail src={thumbnail} alt={title} />
@@ -308,7 +331,7 @@ const Playerbar = ({
         </VideoInfoContainer>
       </ControlItem>
 
-      <ControlItem style={{ color: '#fff', justifyContent: 'flex-end' }}>
+      <ControlItem>
         <TimeInfo>
           {start} / {end}
         </TimeInfo>

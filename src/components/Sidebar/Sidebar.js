@@ -25,15 +25,21 @@ const Aside = styled.aside`
     top: 44px;
     max-width: 100%;
     width: 100%;
-    height: ${(props) => (props.toggleSidebar ? 'calc(100vh - 44px)' : '0')};
+    overflow: hidden;
+    max-height: -webkit-fill-avilable;
+    height: ${(props) =>
+      props.toggleSidebar
+        ? !props.isLoading
+          ? 'calc(100vh - 44px - var(--player-bar-height))'
+          : 'calc(100vh - 44px)'
+        : '0'};
     background-color: rgb(46, 46, 46);
     transition: height 0.5s;
-    overflow: hidden;
     z-index: 100;
 
     & > div:first-child {
       display: none;
-    }
+    } 
   `}
 `
 
@@ -86,7 +92,13 @@ const Sidebar = ({ toggleSidebar }) => {
   const { displayName, photoURL, isLoggedIn, access_token } = useSelector(
     (state) => state.user
   )
-  const { playlists } = useSelector((state) => state.playlists)
+
+  const {
+    playlists: { playlists },
+    player: {
+      video: { loading: isLoading },
+    },
+  } = useSelector((state) => state)
 
   const dispatch = useDispatch()
 
@@ -113,10 +125,10 @@ const Sidebar = ({ toggleSidebar }) => {
     }
 
     isLoggedIn && fetchPlaylists()
-  }, [isLoggedIn, access_token])
+  }, [isLoggedIn, access_token, dispatch])
 
   return (
-    <Aside toggleSidebar={toggleSidebar}>
+    <Aside toggleSidebar={toggleSidebar} isLoading={isLoading}>
       {!toggleSidebar && (
         <Logo>
           <a href="/">
