@@ -11,7 +11,7 @@ const StyledModal = styled.div`
   background: rgb(33, 33, 33);
   transform: translate(-50%, -50%);
   font-family: 'Roboto', sans-serif;
-  z-index: 10;
+  z-index: 102;
 `
 
 const BackColor = styled.div`
@@ -21,6 +21,7 @@ const BackColor = styled.div`
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.8);
+  z-index: 101;
 `
 
 const Modal = ({ children }) => {

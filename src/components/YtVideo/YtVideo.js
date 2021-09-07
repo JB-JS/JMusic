@@ -51,7 +51,6 @@ const YtVideo = ({
         onError={onError}
         opts={{
           playerVars: {
-            origin: 'https://jb-js.github.io',
             controls: 0,
             autoplay: 1,
             loop,

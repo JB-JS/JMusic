@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import Sidebar from '../Sidebar/Sidebar'
 
 const StyledHeader = styled.header`
@@ -13,14 +13,40 @@ const StyledHeader = styled.header`
 `
 
 const ToggleMenu = styled.div`
+  position: relative;
   width: 35px;
   cursor: pointer;
+  height: 24px;
   & > div {
     background: red;
     height: 3px;
+    transition: transform 0.5s;
     & + div {
       margin-top: 6px;
     }
+    ${(props) =>
+      props.toggleSidebar &&
+      css`
+        & {
+          position: absolute;
+          top: 50%;
+          width: 100%;
+        }
+        & + div {
+          margin: 0;
+        }
+        &:nth-child(1) {
+          transform: rotate(45deg);
+        }
+
+        &:nth-child(2) {
+          display: none;
+        }
+
+        &:nth-child(3) {
+          transform: rotate(-45deg);
+        }
+      `}
   }
 `
 
@@ -41,7 +67,7 @@ const Header = () => {
   return (
     <>
       <StyledHeader>
-        <ToggleMenu onClick={onClick}>
+        <ToggleMenu onClick={onClick} toggleSidebar={toggleSidebar}>
           <div></div>
           <div></div>
           <div></div>

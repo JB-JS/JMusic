@@ -4,6 +4,9 @@ import Playerbar from '../Playerbar'
 import { ytApi } from '../../lib/api/api'
 import volumeStorage from '../../lib/storage/volumeStorage'
 import YtVideo from '../YtVideo'
+import { useDispatch, useSelector } from 'react-redux'
+import { changeHover, changeVideo } from '../../features/player/playerSlice'
+import { useState } from 'react'
 
 const initialState = {
   video: {
@@ -66,14 +69,16 @@ function reducer(state, action) {
 }
 
 const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  // const [state] = useReducer(reducer, initialState)
+  const [iframe, setIframe] = useState(null)
+  const state = useSelector((state) => state.player)
+  const dispatch = useDispatch()
 
   const {
     loading,
     title,
     thumbnail,
     publishedAt,
-    iframe,
     start,
     end,
     progress,
@@ -93,27 +98,19 @@ const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
   const getCurrentTimeRef = useRef(null)
   const TimerRef = useRef(null)
 
-  const toggleShowVideo = () => {
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: {
-        show: !show,
-      },
-    })
-  }
+  const toggleShowVideo = useCallback(() => {
+    dispatch(changeVideo({ show: !show }))
+  }, [show, dispatch])
 
-  const onMute = () => {
+  const onMute = useCallback(() => {
     volumeStorage.set(volume)
     iframe.mute()
     iframe.setVolume(0)
 
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: { isMuted: true, sound: { volume: 0 } },
-    })
-  }
+    dispatch(changeVideo({ isMuted: true, sound: { volume: 0 } }))
+  }, [volume, iframe, dispatch])
 
-  const onUnMute = () => {
+  const onUnMute = useCallback(() => {
     const volume = volumeStorage.get()
 
     iframe.unMute()
@@ -122,289 +119,269 @@ const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
       type: 'CHANGE_VIDEO',
       payload: { isMuted: false, sound: { volume } },
     })
-  }
+  }, [iframe, dispatch])
 
-  const onPause = () => {
+  const onPause = useCallback(() => {
     iframe.pauseVideo()
-  }
+  }, [iframe])
 
-  const onPlay = () => {
+  const onPlay = useCallback(() => {
     iframe.playVideo()
-  }
+  }, [iframe])
 
-  const nextVideo = () => {
+  const nextVideo = useCallback(() => {
     iframe.nextVideo()
-  }
+  }, [iframe])
 
-  const previousVideo = () => {
+  const previousVideo = useCallback(() => {
     iframe.previousVideo()
-  }
+  }, [iframe])
 
-  const onClickSetLoop = () => {
-    dispatch({ type: 'CHANGE_VIDEO', payload: { isLoop: !isLoop } })
-  }
+  const onClickSetLoop = useCallback(() => {
+    dispatch(changeVideo({ isLoop: !isLoop }))
+  }, [isLoop, dispatch])
 
-  const getVolumePercent = (e) => {
-    console.log(e.currentTarget, volumeEl)
+  const getVolumePercent = useCallback((e) => {
     const percent =
       ((e.pageX - e.currentTarget.getBoundingClientRect().x) /
         e.currentTarget.scrollWidth) *
       100
 
     return [percent]
-  }
+  }, [])
 
-  const onMouseDownAtVolume = (e) => {
-    const [percent] = getVolumePercent(e)
+  const onMouseDownAtVolume = useCallback(
+    (e) => {
+      const [percent] = getVolumePercent(e)
 
-    iframe.setVolume(percent)
+      iframe.setVolume(percent)
 
-    volumeStorage.set(percent)
+      volumeStorage.set(percent)
 
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: {
-        sound: { volume: percent, isVolumeDragging: true },
-        isMuted: percent <= 0,
-      },
-    })
-  }
+      dispatch(
+        changeVideo({
+          sound: { volume: percent, isVolumeDragging: true },
+          isMuted: percent <= 0,
+        })
+      )
+    },
+    [iframe, dispatch, getVolumePercent]
+  )
 
-  const onMouseMoveAtVolume = (e) => {
-    if (!isVolumeDragging) return false
+  const onMouseMoveAtVolume = useCallback(
+    (e) => {
+      if (!isVolumeDragging) return false
 
-    const [percent] = getVolumePercent(e)
+      const [percent] = getVolumePercent(e)
 
-    if (percent < 0 || percent > 100) return false
+      if (percent < 0 || percent > 100) return false
 
-    iframe.setVolume(percent)
+      iframe.setVolume(percent)
 
-    volumeStorage.set(percent)
+      volumeStorage.set(percent)
 
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: {
-        sound: { volume: percent, isVolumeDragging: true },
-        isMuted: percent <= 0,
-      },
-    })
-  }
+      dispatch(
+        changeVideo({
+          sound: { volume: percent, isVolumeDragging: true },
+          isMuted: percent <= 0,
+        })
+      )
+    },
+    [iframe, getVolumePercent, dispatch, isVolumeDragging]
+  )
 
-  const onMouseDown = (e) => {
-    const percent =
-      ((e.pageX - e.currentTarget.getBoundingClientRect().x) /
-        e.currentTarget.scrollWidth) *
-      100
-    const second = (iframe.getDuration() * percent) / 100
-
-    iframe.seekTo(second)
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: {
-        progress: percent,
-        isVideoDragging: true,
-      },
-    })
-  }
-
-  const onMouseUp = () => {
-    if (isVolumeDragging)
-      dispatch({
-        type: 'CHANGE_VIDEO',
-        payload: {
-          sound: { isVolumeDragging: false },
-        },
-      })
-  }
-
-  const onMouseMove = (e) => {
-    let x = e.pageX - e.currentTarget.getBoundingClientRect().x
-    const percent = (x / e.currentTarget.scrollWidth) * 100
-    const second = Math.floor((iframe.getDuration() * percent) / 100)
-
-    if (x <= 30) x = 30
-    if (x >= e.currentTarget.scrollWidth - 30)
-      x = e.currentTarget.scrollWidth - 30
-
-    dispatch({
-      type: 'CHANGE_HOVER',
-      payload: {
-        hoverTime: toHMS(second),
-        hoverLeft: x,
-      },
-    })
-
-    if (!isVideoDragging) return false
-
-    iframe.seekTo(second, false)
-
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: {
-        progress: percent,
-      },
-    })
-  }
-
-  const onMouseLeave = () => {
-    dispatch({
-      type: 'CHANGE_HOVER',
-      payload: {
-        isHover: false,
-      },
-    })
-  }
-
-  const onMouseOver = (e) => {
-    let x = e.pageX - e.currentTarget.getBoundingClientRect().x
-    const percent = (x / e.currentTarget.scrollWidth) * 100
-    const second = Math.floor((iframe.getDuration() * percent) / 100)
-
-    if (x <= 30) x = 30
-    if (x >= document.documentElement.scrollWidth - 30)
-      x = document.documentElement.scrollWidth - 30
-    dispatch({
-      type: 'CHANGE_HOVER',
-      payload: {
-        isHover: true,
-        hoverTime: toHMS(second),
-        hoverLeft: x,
-      },
-    })
-  }
-
-  const onMouseUpAtVideo = (e) => {
-    if (isVideoDragging) {
+  const onMouseDown = useCallback(
+    (e) => {
       const percent =
-        ((e.pageX - 260) / videoProgressEl.current.scrollWidth) * 100
+        ((e.pageX - e.currentTarget.getBoundingClientRect().x) /
+          e.currentTarget.scrollWidth) *
+        100
+      const second = (iframe.getDuration() * percent) / 100
+
+      iframe.seekTo(second)
+      dispatch(changeVideo({ progress: percent, isVideoDragging: true }))
+    },
+    [iframe, dispatch]
+  )
+
+  const onMouseUp = useCallback(() => {
+    isVolumeDragging &&
+      dispatch(changeVideo({ sound: { isVolumeDragging: false } }))
+  }, [isVolumeDragging, dispatch])
+
+  const onMouseMove = useCallback(
+    (e) => {
+      let x = e.pageX - e.currentTarget.getBoundingClientRect().x
+      const percent = (x / e.currentTarget.scrollWidth) * 100
       const second = Math.floor((iframe.getDuration() * percent) / 100)
 
-      dispatch({
-        type: 'CHANGE_VIDEO',
-        payload: {
-          isVideoDragging: false,
-        },
-      })
+      if (x <= 30) x = 30
+      if (x >= e.currentTarget.scrollWidth - 30)
+        x = e.currentTarget.scrollWidth - 30
 
-      iframe.seekTo(second, true)
-    }
-  }
+      if (!isVideoDragging) return false
+
+      iframe.seekTo(second, false)
+
+      dispatch(
+        changeHover({
+          hoverTime: toHMS(second),
+          hoverLeft: x,
+        })
+      )
+
+      dispatch(changeVideo({ progress: percent }))
+    },
+    [iframe, dispatch, isVideoDragging]
+  )
+
+  const onMouseLeave = useCallback(() => {
+    dispatch(changeHover({ isHover: false }))
+  }, [dispatch])
+
+  const onMouseOver = useCallback(
+    (e) => {
+      let x = e.pageX - e.currentTarget.getBoundingClientRect().x
+      const percent = (x / e.currentTarget.scrollWidth) * 100
+      const second = Math.floor((iframe.getDuration() * percent) / 100)
+
+      if (x <= 30) x = 30
+      if (x >= document.documentElement.scrollWidth - 30)
+        x = document.documentElement.scrollWidth - 30
+
+      dispatch(
+        changeHover({ isHover: true, hoverTime: toHMS(second), hoverLeft: x })
+      )
+    },
+    [dispatch, iframe]
+  )
+
+  const onMouseUpAtVideo = useCallback(
+    (e) => {
+      if (isVideoDragging) {
+        const percent =
+          ((e.pageX - 260) / videoProgressEl.current.scrollWidth) * 100
+        const second = Math.floor((iframe.getDuration() * percent) / 100)
+
+        dispatch(changeVideo({ isVideoDragging: false }))
+
+        iframe.seekTo(second, true)
+      }
+    },
+    [iframe, dispatch, isVideoDragging]
+  )
 
   // iframe Video가 로딩 되었을때
-  const onReady = ({ target }) => {
-    const hms = toHMS(target.getDuration())
+  const onReady = useCallback(
+    ({ target }) => {
+      const hms = toHMS(target.getDuration())
 
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: {
-        loading: false,
-        iframe: target,
-        end: hms,
-        sound: { volume: volumeStorage.get() || target.getVolume() },
-        isMuted: target.isMuted(),
-      },
-    })
+      setIframe(target)
 
-    volumeStorage.get() && target.setVolume(volumeStorage.get())
+      dispatch(
+        changeVideo({
+          loading: false,
+          end: hms,
+          sound: { volume: volumeStorage.get() || target.getVolume() },
+          isMuted: target.isMuted(),
+        })
+      )
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === ' ') {
-        e.preventDefault()
-        switch (target.getPlayerState()) {
-          case 1:
-            target.pauseVideo()
-            break
-          case 0:
-          case 2:
-            target.playVideo()
-            break
-          default:
-            break
+      volumeStorage.get() && target.setVolume(volumeStorage.get())
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === ' ') {
+          e.preventDefault()
+          switch (target.getPlayerState()) {
+            case 1:
+              target.pauseVideo()
+              break
+            case 0:
+            case 2:
+              target.playVideo()
+              break
+            default:
+              break
+          }
         }
-      }
-    })
-  }
+      })
+    },
+    [dispatch]
+  )
 
   const currentTime = useCallback(() => {
     const hms = toHMS(Math.floor(iframe.getCurrentTime()))
 
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: {
+    dispatch(
+      changeVideo({
         progress: (iframe.getCurrentTime() / iframe.getDuration()) * 100,
         start: hms,
-      },
-    })
-  }, [iframe])
+      })
+    )
+  }, [iframe, dispatch])
 
-  const onStateChange = async (e) => {
-    switch (e.data) {
-      // 버퍼링 상태
-      case 3:
-        dispatch({
-          type: 'CHANGE_VIDEO',
-          payload: { playerState: 'loading' },
-        })
-        break
-      // 재생 상태
-      case 1:
-        const playlist = iframe.getPlaylist()
-        const {
-          data: {
-            items: [
-              {
-                snippet: {
-                  publishedAt,
-                  channelTitle,
-                  thumbnails: {
-                    medium: { url },
+  const onStateChange = useCallback(
+    async (e) => {
+      switch (e.data) {
+        // 버퍼링 상태
+        case 3:
+          return dispatch(changeVideo({ playerState: 'loading' }))
+        // 재생 상태
+        case 1:
+          const playlist = iframe.getPlaylist()
+          const {
+            data: {
+              items: [
+                {
+                  snippet: {
+                    publishedAt,
+                    channelTitle,
+                    thumbnails: {
+                      medium: { url },
+                    },
+                    localized: { title },
                   },
-                  localized: { title },
                 },
-              },
-            ],
-          },
-        } = await ytApi.getVideo(playlist[iframe.getPlaylistIndex()])
+              ],
+            },
+          } = await ytApi.getVideo(playlist[iframe.getPlaylistIndex()])
 
-        dispatch({
-          type: 'CHANGE_VIDEO',
-          payload: {
-            playerState: 1,
-            thumbnail: url,
-            title,
-            publishedAt,
-            channelTitle,
-            end: toHMS(iframe.getDuration()),
-          },
-        })
+          return dispatch(
+            changeVideo({
+              playerState: 1,
+              thumbnail: url,
+              title,
+              publishedAt,
+              channelTitle,
+              end: toHMS(iframe.getDuration()),
+            })
+          )
 
-        break
-      // 정지 상태 그리고 종료  상태
-      case 0:
-        dispatch({
-          type: 'CHANGE_VIDEO',
-          payload: { playerState: e.data },
-        })
-        break
-      case 2:
-        dispatch({
-          type: 'CHANGE_VIDEO',
-          payload: { playerState: e.data },
-        })
+        // 정지 상태 그리고 종료  상태
+        case 0:
+          return dispatch(changeVideo({ playerState: e.data }))
 
-        clearInterval(TimerRef.current)
-        break
-      default:
-        break
-    }
-  }
+        case 2:
+          dispatch(changeVideo({ playerState: e.data }))
 
-  const onError = (e) => {
-    if (type === 'playlist' && (e.data === 101 || e.data === 150)) {
-      alert('허용되지 않은 영상입니다 재생목록에서 삭제해주세요')
-      iframe.nextVideo()
-    }
-  }
+          return clearInterval(TimerRef.current)
+
+        default:
+          break
+      }
+    },
+    [dispatch, iframe]
+  )
+
+  const onError = useCallback(
+    (e) => {
+      if (type === 'playlist' && (e.data === 101 || e.data === 150)) {
+        alert('허용되지 않은 영상입니다 재생목록에서 삭제해주세요')
+        iframe.nextVideo()
+      }
+    },
+    [iframe, type]
+  )
 
   useEffect(() => {
     if (iframe) {
