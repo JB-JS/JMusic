@@ -54,6 +54,10 @@ const ControlItem = styled.div`
   align-items: center;
   height: 100%;
 
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0;
+
   &:first-child {
     grid-area: start;
   }
@@ -138,10 +142,15 @@ const VideoInfo = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 1rem;
+
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0;
 `
 
 const Title = styled.a`
   display: block;
+  min-width: 0;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -154,6 +163,7 @@ const Info = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  min-width: 0;
   color: var(--player-desc-color);
   font-size: 0.8125rem;
 `
