@@ -162,7 +162,8 @@ const MusicData = styled.td`
   height: 54px;
 
   & > div:nth-child(2) {
-    width: 50%;
+    flex-shrink: 1;
+    min-width: 0;
   }
 `
 
@@ -216,9 +217,11 @@ const ButtonBlock = styled.div`
   margin-top: 20px;
 `
 
-const Title = styled.h2``
+const Title = styled.h2`
+  font-size: 20px;
+`
 
-const Form = styled.form`
+const Form = styled.div`
   & > div {
     &:first-child {
       padding: 24px 24px;
@@ -245,17 +248,23 @@ const Form = styled.form`
   }
 `
 
-const ModalContent = styled.div`
-  border-top: 1px solid rgb(96, 96, 96);
-  border-bottom: 1px solid rgb(96, 96, 96);
-`
-
 const InputBlock = styled.div`
   position: relative;
 `
 
+const ModalContent = styled.div`
+  border-top: 1px solid rgb(96, 96, 96);
+  border-bottom: 1px solid rgb(96, 96, 96);
+  font-size: 14px;
+
+  & > div:first-child ${InputBlock} {
+    margin-bottom: 3px;
+  }
+`
+
 const Void = styled.div`
-  line-height: 20px;
+  visibility: hidden;
+  line-height: ${(props) => props.lh || '20px'};
 `
 
 const ActionBtn = styled.div`
@@ -288,10 +297,18 @@ const Description = styled.div`
   }
 `
 
+const TitleInput = styled.input`
+  ${(props) =>
+    props.isFocused &&
+    css`
+      caret-color: rgb(62, 166, 255);
+    `}
+`
+
 const Underline = styled.div`
   position: relative;
   height: 2px;
-  margin-top: 3px;
+
   background-color: rgb(66, 66, 66);
 
   & > div {
@@ -310,10 +327,11 @@ const Underline = styled.div`
 
 const Label = styled.label`
   position: absolute;
+  top: 0;
   left: 0;
   color: rgba(255, 255, 255, 0.7);
   font-weight: lighter;
-  font-size: 1rem;
+  font-size: 14px;
   transition: 0.25s;
   transform-origin: left top;
 
@@ -328,14 +346,33 @@ const Label = styled.label`
     props.isValue &&
     css`
       transform: translateY(-75%) scale(0.75);
+      padding-bottom: 8px;
     `}
 `
 
 const TextareaBlock = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
+  margin-bottom: 1px;
+
+  ${Void} {
+    white-space: pre-wrap;
+    ${(props) =>
+      props.isFocused &&
+      css`
+        caret-color: rgb(62, 166, 255);
+      `}
+  }
+
+  & > div:last-child {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    & > textarea {
+      height: 100%;
+    }
+  }
 `
 
 const initialState = {
@@ -378,16 +415,18 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isOpen, setIsOpen] = useState(false)
-  const [inputs, setInputs] = useState({
-    title: '',
-    description: '',
-    isFocus: { title: false, description: false },
-  })
 
   const { access_token } = useSelector((state) => state.user)
 
-  const { title, description, isFocus } = inputs
   const { loading, error, datas } = state
+
+  const [inputs, setInputs] = useState({
+    title: '',
+    description: (datas && datas.listData.items[0].snippet.description) || '',
+    isFocus: { title: false, description: false },
+  })
+
+  const { title, description, isFocus } = inputs
 
   const getPlaylist = useCallback(async () => {
     const { data: itemData } = await ytApi.getPlaylistItems(
@@ -618,7 +657,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                   </Thead>
                   <Thead width="25%">앨범</Thead>
                   <Thead width="25%">아티스트</Thead>
-                  <Thead>시간</Thead>
+                  <Thead width="15%">시간</Thead>
                 </tr>
               </thead>
               <Tbody>
@@ -698,9 +737,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     isValue={title}
                     isFocused={isFocus.title}
                   >
-                    제목
+                    {(datas && datas.listData.items[0].snippet.title) || '제목'}
                   </Label>
-                  <input
+                  <TitleInput
                     type="text"
                     value={title}
                     id="title"
@@ -709,19 +748,18 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     onFocus={onFocus}
                     name="title"
                     autoComplete="off"
+                    isFocused={isFocus.title}
                   />
-                  {console.log}
-
-                  <Underline isFocused={isFocus.title}>
-                    <div></div>
-                  </Underline>
                 </InputBlock>
+                <Underline isFocused={isFocus.title}>
+                  <div></div>
+                </Underline>
               </div>
               <Description>
                 <Void>&nbsp;</Void>
                 <InputBlock>
                   <Void>&nbsp;</Void>
-                  <TextareaBlock>
+                  <TextareaBlock isFocused={isFocus.description}>
                     <Label
                       htmlFor="description"
                       isValue={description}
@@ -729,16 +767,10 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     >
                       설명
                     </Label>
-                    <textarea
-                      type="text"
-                      id="description"
-                      value={description}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      onFocus={onFocus}
-                      name="description"
-                      autoComplete="off"
-                    />
+                    <Void lh="22.4px">{description}&nbsp;</Void>
+                    <div>
+                      <textarea type="text" autoComplete="off" />
+                    </div>
                   </TextareaBlock>
                 </InputBlock>
                 <Underline isFocused={isFocus.description}>
@@ -750,11 +782,22 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
               <button type="button" onClick={onModalClose}>
                 취소
               </button>
-              <button onClick={onSave}>저장</button>
+              <button type="button" onClick={onSave}>
+                저장
+              </button>
             </ActionBtn>
           </Form>
         </Modal>
       )}
+      <input
+        type="hidden"
+        id="description"
+        onChange={onChange}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        name="description"
+        isFocused={isFocus.title}
+      />
     </InfoContainer>
   )
 }

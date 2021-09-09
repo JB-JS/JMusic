@@ -24,12 +24,11 @@ const Container = styled.div`
   position: fixed;
   bottom: 0;
   right: 0;
-  display: grid;
-  grid-template-columns: 0fr 1fr 0fr;
-  grid-template-areas: 'start middle end';
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: calc(100% - var(--sidebar-width));
   height: var(--player-bar-height);
-  padding: 0 1rem;
   background-color: var(--player-bg);
   backdrop-filter: saturate(50%) blur(20px);
   color: var(--system-primary);
@@ -50,27 +49,22 @@ const Container = styled.div`
 `
 
 const ControlItem = styled.div`
+  height: 100%;
   display: flex;
   align-items: center;
-  height: 100%;
-
   flex-grow: 1;
   flex-shrink: 1;
   min-width: 0;
 
   &:first-child {
-    grid-area: start;
   }
 
   &:nth-child(2) {
-    display: flex;
-    align-items: center;
     justify-content: center;
-    grid-area: middle;
   }
 
   &:nth-child(3) {
-    grid-area: end;
+    justify-content: flex-end;
   }
 
   &:nth-child(2) > div:nth-child(4) {
@@ -120,6 +114,8 @@ const HoverTimeInfo = styled.div`
 const VideoInfoContainer = styled.div`
   display: flex;
   align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1;
 `
 
 const ChannelTitle = styled.span``
@@ -129,6 +125,7 @@ const VideoThumbnail = styled.div`
   height: 2.5rem;
   background: rgb(66, 66, 66);
   border-radius: 2px;
+  flex-shrink: 0;
 `
 
 const Thumbnail = styled.img`
