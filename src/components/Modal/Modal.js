@@ -5,7 +5,7 @@ const StyledModal = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
-  max-width: 480px;
+  max-width: 680px;
   width: 100%;
   border: 1px solid rgb(255, 255, 255, 0.2);
   background: rgb(33, 33, 33);

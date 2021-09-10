@@ -250,12 +250,15 @@ const Form = styled.div`
 
 const InputBlock = styled.div`
   position: relative;
+  margin-bottom: 2px;
 `
 
 const ModalContent = styled.div`
   border-top: 1px solid rgb(96, 96, 96);
   border-bottom: 1px solid rgb(96, 96, 96);
   font-size: 14px;
+
+  color: #fff;
 
   & > div:first-child ${InputBlock} {
     margin-bottom: 3px;
@@ -297,6 +300,10 @@ const Description = styled.div`
   }
 `
 
+const DescriptionTextarea = styled.textarea`
+  caret-color: ${(props) => props.isFocused && 'rgb(62, 166, 255)'};
+`
+
 const TitleInput = styled.input`
   ${(props) =>
     props.isFocused &&
@@ -331,7 +338,7 @@ const Label = styled.label`
   left: 0;
   color: rgba(255, 255, 255, 0.7);
   font-weight: lighter;
-  font-size: 14px;
+  font-size: 16px;
   transition: 0.25s;
   transform-origin: left top;
 
@@ -353,7 +360,7 @@ const Label = styled.label`
 const TextareaBlock = styled.div`
   position: relative;
   width: 100%;
-  margin-bottom: 1px;
+  margin-bottom: 3px;
 
   ${Void} {
     white-space: pre-wrap;
@@ -364,12 +371,15 @@ const TextareaBlock = styled.div`
       `}
   }
 
-  & > div:last-child {
+  & > div > div:last-child {
     position: absolute;
     top: 0;
     width: 100%;
     height: 100%;
     & > textarea {
+      line-height: 22.4px;
+      font-weight: normal;
+      font-family: inherit;
       height: 100%;
     }
   }
@@ -737,7 +747,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     isValue={title}
                     isFocused={isFocus.title}
                   >
-                    {(datas && datas.listData.items[0].snippet.title) || '제목'}
+                    제목
                   </Label>
                   <TitleInput
                     type="text"
@@ -767,9 +777,22 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     >
                       설명
                     </Label>
-                    <Void lh="22.4px">{description}&nbsp;</Void>
                     <div>
-                      <textarea type="text" autoComplete="off" />
+                      <Void lh="22.4px">{description}&nbsp;</Void>
+                      <div>
+                        <DescriptionTextarea
+                          type="text"
+                          autoComplete="off"
+                          id="description"
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          onFocus={onFocus}
+                          name="description"
+                          value={description}
+                          isFocused={isFocus.description}
+                          rows={1}
+                        />
+                      </div>
                     </div>
                   </TextareaBlock>
                 </InputBlock>
@@ -789,15 +812,6 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
           </Form>
         </Modal>
       )}
-      <input
-        type="hidden"
-        id="description"
-        onChange={onChange}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        name="description"
-        isFocused={isFocus.title}
-      />
     </InfoContainer>
   )
 }
