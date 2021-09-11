@@ -19,7 +19,7 @@ const GlobalStyle = createGlobalStyle`
     --sidebar-selected-bg: rgba(60, 60, 67, 0.1);
     --divider: rgba(0, 0, 0, 0.15);
     --player-bar-height: 72px;
-    --theme-background-color: transparent ;
+    --theme-background-color: transparent;
     --searchbox-border-color: #ccc;
     --searchbox-background: #fff;
     --searchbox-icon-fill: rgba(0, 0, 0, .65);
@@ -32,6 +32,7 @@ const GlobalStyle = createGlobalStyle`
     --playlist-item-bg: rgba(255, 255, 255, 0.05);
     --tracklist-hover-bg: rgba(0, 0, 0, 0.06);
     --googleBtn-color: #fff; 
+    --scrollbar-width: 15px;
 
     @media (max-width: 760px) {
       --sidebar-width: 33vw;
@@ -43,7 +44,7 @@ const GlobalStyle = createGlobalStyle`
       --theme-color: #fff;
       --system-primary: rgb(255, 255, 255, 0.85);
       --system-secondary: rgb(255, 255, 255, 0.55);
-      --sidebar-bg: rgba(235, 235, 245, 0.03);
+      --sidebar-bg: rgb(33, 33, 33);
       --sidebar-border-color: rgba(255, 255, 255, 0.1);
       --sidebar-selected-bg: rgba(235, 235, 245, 0.1);
       --primary-color-rgb: 250, 45, 72;
@@ -61,6 +62,10 @@ const GlobalStyle = createGlobalStyle`
       --sound-progress-bg: #fff;
       --tracklist-hover-bg: rgba(255, 255, 255, 0.06);
       --googleBtn-color: #000; 
+      
+    }
+    .MuiSkeleton-root {
+      background-color : rgba(255, 255, 255, 0.13) !important;
     }
   }
 

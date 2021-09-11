@@ -23,11 +23,11 @@ const ProgressContainer = styled.div`
 const Container = styled.div`
   position: fixed;
   bottom: 0;
-  right: 0;
+  right: var(--scrollbar-width);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: calc(100% - var(--sidebar-width));
+  width: calc(100% - var(--sidebar-width) - var(--scrollbar-width));
   height: var(--player-bar-height);
   background-color: var(--player-bg);
   backdrop-filter: saturate(50%) blur(20px);

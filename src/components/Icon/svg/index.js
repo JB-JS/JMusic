@@ -15,6 +15,7 @@ import { ReactComponent as playlist } from './playlist.svg'
 import { ReactComponent as playlistRemove } from './playlistRemove.svg'
 import { ReactComponent as playlistAdd } from './playlistAdd.svg'
 import { ReactComponent as edit } from './edit.svg'
+import { ReactComponent as contextMenu } from './contextMenu.svg'
 
 export {
   search,
@@ -34,4 +35,5 @@ export {
   playlistRemove,
   playlistAdd,
   edit,
+  contextMenu,
 }

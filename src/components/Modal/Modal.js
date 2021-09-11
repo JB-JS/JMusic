@@ -12,6 +12,10 @@ const StyledModal = styled.div`
   transform: translate(-50%, -50%);
   font-family: 'Roboto', sans-serif;
   z-index: 102;
+
+  @media (max-width: 680px) {
+    width: calc(100% - 40px);
+  }
 `
 
 const BackColor = styled.div`

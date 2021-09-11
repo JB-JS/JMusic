@@ -4,9 +4,11 @@ import Icon from '../../components/Icon'
 import { ytApi } from '../../lib/api/api'
 import { HourMinute } from '../../lib/utils'
 import { useSelector } from 'react-redux'
-import { media } from '../../lib/utils/index'
 import { useState } from 'react'
+import { media } from '../../lib/utils/index'
 import Modal from '../../components/Modal/Modal'
+import Typography from '@material-ui/core/Typography'
+import Skeleton from '@material-ui/lab/Skeleton'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -22,28 +24,28 @@ const InfoContainer = styled.div`
 const ItemHead = styled.div`
   display: flex;
   margin-bottom: 2.5rem;
-  @media (max-width: 1000px) {
+  ${media.desktop`
     flex-direction: column;
     align-items: center;
-  }
+    `}
 `
 
 const HeadThumbnail = styled.img`
   max-width: 270px;
+  width: 100%;
   height: 270px;
   object-fit: cover;
   box-shadow: 0 10px 20px 0 var(--playlist-shadow-color);
+
   border-radius: 6px;
 `
 
 const HeadContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  margin-top: 50px;
   margin-left: 2.125rem;
   ${media.desktop`
-  align-items: center;
   margin: 1rem 0 0 0;
+  text-align: center;
   `}
 
   font-size: 0.8125rem;
@@ -68,8 +70,9 @@ const PlayBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
-  padding: 0.625rem 1.25rem;
+  width: 90px;
+  height: 40px;
+  border-radius: 4px;
   background: var(--red);
   color: #fff;
   cursor: pointer;
@@ -197,8 +200,10 @@ const Artist = styled.div`
 const EditBtn = styled.button`
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 100%;
-  padding: 0 30px;
+  width: 167px;
+  height: 40px;
   border: 1px solid #fff;
   border-radius: 2px;
   margin-left: 20px;
@@ -305,6 +310,7 @@ const DescriptionTextarea = styled.textarea`
 `
 
 const TitleInput = styled.input`
+  line-height: 22.4px;
   ${(props) =>
     props.isFocused &&
     css`
@@ -385,6 +391,13 @@ const TextareaBlock = styled.div`
   }
 `
 
+const HeadDescription = styled.p`
+  max-width: 640px;
+  width: 100%;
+  text-align: justify;
+  line-height: 1.8;
+`
+
 const initialState = {
   isLoading: false,
   datas: null,
@@ -431,7 +444,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const { loading, error, datas } = state
 
   const [inputs, setInputs] = useState({
-    title: '',
+    title: datas && datas.listData.items[0].snippet.description,
     description: (datas && datas.listData.items[0].snippet.description) || '',
     isFocus: { title: false, description: false },
   })
@@ -586,42 +599,74 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     fetchData()
   }, [fetchData])
 
-  if (loading) return <div>로딩중입니다...</div>
   if (error) return <div>에러가 발생했습니다!</div>
 
   return (
     <InfoContainer>
-      {datas && (
-        <>
-          <ItemHead>
+      {console.log(datas)}
+      <>
+        <ItemHead>
+          {datas && datas.itemData ? (
             <HeadThumbnail
               src={
                 datas && datas.itemData.items.length <= 0
                   ? 'https://lh3.googleusercontent.com/R2Of6QakdNj2LM_3i9WK2Uqn3Jl0GVZKp6-4gY5PqOFdlvx09K4RrR3koGMOK5qls0gAJNXeS-oN91Wf=s576'
-                  : datas.listData.items[0].snippet.thumbnails.medium.url
+                  : datas.itemData.items[0].snippet.thumbnails.medium.url
               }
               alt="playlist thumbnail"
             />
-            <HeadContent>
-              <HeadTitle>
-                {datas && datas.listData.items[0].snippet.title}
-              </HeadTitle>
-              <div>
-                <span>재생목록</span>
-                <span> • </span>
-                <span>{datas.listData.items[0].snippet.channelTitle}</span>
-              </div>
-              <SingCnt>
-                <span>노래 {datas.itemData.items.length}곡</span>
-                <span> • </span>
-                <span>{datas.listData.totalTime}</span>
-              </SingCnt>
-              {datas.listData.items[0].snippet.description && (
-                <p>{datas.listData.items[0].snippet.description}</p>
+          ) : (
+            <Skeleton
+              variant="rect"
+              style={{ borderRadius: '4px' }}
+              width={270}
+            >
+              <HeadThumbnail />
+            </Skeleton>
+          )}
+          <HeadContent>
+            {datas ? (
+              <HeadTitle>{datas.listData.items[0].snippet.title}</HeadTitle>
+            ) : (
+              <Skeleton
+                style={{ marginBottom: '1rem' }}
+                variant="string"
+                height={33}
+              />
+            )}
+            <div>
+              {datas ? (
+                <>
+                  <span>재생목록</span>
+                  <span> • </span>
+                  <span>{datas.listData.items[0].snippet.channelTitle}</span>
+                </>
+              ) : (
+                <Skeleton variant="string" />
               )}
-              <ButtonBlock>
-                <div style={{ marginTop: 'auto' }}>
-                  {datas.itemData.items.length > 0 && (
+            </div>
+            <SingCnt>
+              {datas ? (
+                <>
+                  <span>노래 {datas.itemData.items.length}곡</span>
+                  <span> • </span>
+                  <span>{datas.listData.totalTime}</span>
+                </>
+              ) : (
+                <Skeleton variant="string" />
+              )}
+            </SingCnt>
+            <HeadDescription>
+              {datas ? (
+                datas.listData.items[0].snippet.description
+              ) : (
+                <Skeleton variant="string" width="100%" maxWidth={680} />
+              )}
+            </HeadDescription>
+            <ButtonBlock>
+              <div style={{ marginTop: 'auto' }}>
+                {datas ? (
+                  datas.itemData.items.length > 0 ? (
                     <PlayBtn
                       onClick={onClick}
                       data-videoid={
@@ -640,9 +685,20 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                       />
                       재생
                     </PlayBtn>
-                  )}
-                </div>
-                <div>
+                  ) : (
+                    ''
+                  )
+                ) : (
+                  <Skeleton
+                    width={90}
+                    height={40}
+                    variant="rect"
+                    style={{ borderRadius: '4px' }}
+                  ></Skeleton>
+                )}
+              </div>
+              <div>
+                {datas ? (
                   <EditBtn onClick={() => setIsOpen(true)}>
                     <Icon
                       name="edit"
@@ -654,84 +710,102 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     />
                     재생목록 수정
                   </EditBtn>
-                </div>
-              </ButtonBlock>
-            </HeadContent>
-          </ItemHead>
-          {datas.itemData.items.length > 0 && (
-            <Table>
-              <thead>
-                <tr>
-                  <Thead width="40%" style={{ paddingLeft: '0.375rem' }}>
-                    노래
-                  </Thead>
-                  <Thead width="25%">앨범</Thead>
-                  <Thead width="25%">아티스트</Thead>
-                  <Thead width="15%">시간</Thead>
-                </tr>
-              </thead>
-              <Tbody>
-                {datas.itemData.items.map((item, idx) => (
-                  <TbodyRow key={item.id} even={idx % 2 === 0}>
-                    <MusicData>
-                      <ImgContainer
-                        onClick={onClick}
-                        data-playlistid={playlistId}
-                        data-videoid={item.snippet.resourceId.videoId}
-                      >
-                        <Thumbnail
-                          src={item.snippet.thumbnails.medium.url}
-                          alt="video thumbnail"
-                        />
-                        <Overlay>
-                          <Icon
-                            name="play"
-                            width="24"
-                            height="24"
-                            fill="#fff"
-                          />
-                        </Overlay>
-                      </ImgContainer>
-                      <div>
-                        <ItemTitle>{item.snippet.title}</ItemTitle>
-                        <Artist>
-                          <span>{item.snippet.videoOwnerChannelTitle}</span>
-                        </Artist>
-                      </div>
-                    </MusicData>
-                    <td></td>
-                    <td>
-                      <div>{item.snippet.videoOwnerChannelTitle}</div>
-                    </td>
-                    <td>
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                        }}
-                      >
-                        {item.duration}
-                        {/* <Icon
-                          name="playlistRemove"
-                          width="24"
-                          height="24"
-                          data-itemid={item.id}
-                          onClick={onPlaylistRemoveItem}
+                ) : (
+                  <Skeleton
+                    variant="rect"
+                    width={167}
+                    height={40}
+                    style={{ marginLeft: '20px', borderRadius: '4px' }}
+                  />
+                )}
+              </div>
+            </ButtonBlock>
+          </HeadContent>
+        </ItemHead>
+
+        <Table>
+          <thead>
+            <tr>
+              <Thead width="40%" style={{ paddingLeft: '0.375rem' }}>
+                노래
+              </Thead>
+              <Thead width="25%">앨범</Thead>
+              <Thead width="25%">아티스트</Thead>
+              <Thead width="15%">시간</Thead>
+            </tr>
+          </thead>
+          <Tbody>
+            {datas && datas.itemData.items.length > 0 ? (
+              datas.itemData.items.map((item, idx) => (
+                <TbodyRow key={item.id} even={idx % 2 === 0}>
+                  <MusicData>
+                    <ImgContainer
+                      onClick={onClick}
+                      data-playlistid={playlistId}
+                      data-videoid={item.snippet.resourceId.videoId}
+                    >
+                      <Thumbnail
+                        src={item.snippet.thumbnails.medium.url}
+                        alt="video thumbnail"
+                      />
+                      <Overlay>
+                        <Icon name="play" width="24" height="24" fill="#fff" />
+                      </Overlay>
+                    </ImgContainer>
+                    <div>
+                      <ItemTitle>{item.snippet.title}</ItemTitle>
+                      <Artist>
+                        <span>{item.snippet.videoOwnerChannelTitle}</span>
+                      </Artist>
+                    </div>
+                  </MusicData>
+                  <td></td>
+                  <td>
+                    <div>{item.snippet.videoOwnerChannelTitle}</div>
+                  </td>
+                  <td>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                      }}
+                    >
+                      {item.duration}
+                      {
+                        <Icon
+                          name="contextMenu"
                           style={{
-                            fill: 'var(--theme-color)',
-                            marginLeft: '0.5rem',
+                            width: '14px',
+                            height: '14px',
+                            fill: '#fa586a',
+                            marginLeft: '16px',
                             cursor: 'pointer',
                           }}
-                        /> */}
-                      </div>
-                    </td>
-                  </TbodyRow>
-                ))}
-              </Tbody>
-            </Table>
-          )}
-        </>
-      )}
+                        />
+                        // <Icon
+                        //   name="playlistRemove"
+                        //   width="18"
+                        //   height="18"
+                        //   data-itemid={item.id}
+                        //   onClick={onPlaylistRemoveItem}
+                        //   style={{
+                        //     fill: '#aaa',
+                        //     marginLeft: '0.5rem',
+                        //     cursor: 'pointer',
+                        //   }}
+                        // />
+                      }
+                    </div>
+                  </td>
+                </TbodyRow>
+              ))
+            ) : (
+              <tr></tr>
+            )}
+          </Tbody>
+        </Table>
+      </>
       {isOpen && (
         <Modal>
           <Form>

@@ -1,19 +1,28 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import YouTube from 'react-youtube'
+import { useEffect } from 'react'
+import { useState } from 'react'
 
 const Video = styled.div`
   position: fixed;
   top: 0;
-  right: 0;
+  right: var(--scrollbar-width);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(100% - var(--sidebar-width));
+  width: calc(100% - var(--sidebar-width) - var(--scrollbar-width));
   height: calc(100vh - var(--player-bar-height));
   padding: 2.875rem 3.5rem 0;
   background: rgb(10, 10, 10);
-  transform: ${(props) =>
-    props.show ? 'translate3d(0, 0, 0)' : 'translate3d(0, 100vh, 0)'};
+
+  ${(props) =>
+    props.show
+      ? css`
+          transform: translate3d(0, 0, 0);
+        `
+      : css`
+          transform: translate3d(0, 100vh, 0);
+        `}
   transition: transform 0.3s;
   z-index: 10;
   & > div:first-child {
@@ -43,8 +52,27 @@ const YtVideo = ({
   loop,
   playlistItemsId,
 }) => {
+  const [isWait, setIsWait] = useState(true)
+  useEffect(() => {
+    if (show) {
+      setIsWait(false)
+    } else {
+      const timerId = setTimeout(() => {
+        setIsWait(true)
+      }, 300)
+
+      return () => {
+        clearTimeout(timerId)
+      }
+    }
+  }, [show])
   return (
-    <Video show={show}>
+    <Video
+      show={show}
+      style={{
+        visibility: isWait ? 'hidden' : 'visible',
+      }}
+    >
       <YouTube
         onReady={onReady}
         onStateChange={onStateChange}
