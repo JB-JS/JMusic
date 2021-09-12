@@ -18,9 +18,19 @@ export const playlistsSlice = createSlice({
     error(state, action) {
       return { ...state, isLoading: false, error: action.payload }
     },
+    update(state, action) {
+      return {
+        ...state,
+        playlists: state.playlists.map((playlist) =>
+          playlist.id === action.payload.id
+            ? { ...playlist, ...action.payload.data }
+            : playlist
+        ),
+      }
+    },
   },
 })
 
-export const { loading, success, error } = playlistsSlice.actions
+export const { loading, success, error, update } = playlistsSlice.actions
 
 export default playlistsSlice.reducer

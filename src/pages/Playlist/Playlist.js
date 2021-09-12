@@ -3,13 +3,14 @@ import styled, { css } from 'styled-components'
 import Icon from '../../components/Icon'
 import { ytApi } from '../../lib/api/api'
 import { HourMinute } from '../../lib/utils'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useState } from 'react'
 import { media } from '../../lib/utils/index'
 import Modal from '../../components/Modal/Modal'
 import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
 import { useRef } from 'react'
+import { update } from '../../features/playlists/playlistsSlice'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -460,6 +461,8 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
   const { loading, error, datas } = state
 
+  const reduxDispatch = useDispatch()
+
   const [inputs, setInputs] = useState({
     title: '',
     description: '',
@@ -619,8 +622,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     })
 
     dispatch({ type: 'UPDATE', datas: data })
+    reduxDispatch(update({ id: playlistId, data }))
     setIsOpen(false)
-  }, [playlistId, access_token, title, description])
+  }, [playlistId, access_token, title, description, reduxDispatch])
 
   useEffect(() => {
     isOpen && titleInputRef.current.focus()
@@ -873,6 +877,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     value={title}
                     id="title"
                     onChange={onChange}
+                    onKeyDown={(e) => {
+                      e.stopPropagation()
+                    }}
                     onBlur={onBlur}
                     onFocus={onFocus}
                     name="title"
@@ -905,6 +912,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                           autoComplete="off"
                           id="description"
                           onChange={onChange}
+                          onKeyDown={(e) => {
+                            e.stopPropagation()
+                          }}
                           onBlur={onBlur}
                           onFocus={onFocus}
                           name="description"
