@@ -27,6 +27,27 @@ export const ytApi = {
     })
   },
 
+  updatePlaylist(id, access_token, datas) {
+    try {
+      return axios({
+        method: 'put',
+        url: 'https://www.googleapis.com/youtube/v3/playlists',
+        params: {
+          part: 'snippet',
+          access_token,
+        },
+        data: {
+          id,
+          snippet: {
+            ...datas,
+          },
+        },
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
   getPlaylistItems(playlistId, access_token) {
     return authApi.get('playlistItems', {
       params: {

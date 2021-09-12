@@ -9,6 +9,7 @@ import { media } from '../../lib/utils/index'
 import Modal from '../../components/Modal/Modal'
 import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
+import { useRef } from 'react'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -43,6 +44,7 @@ const HeadThumbnail = styled.img`
 const HeadContent = styled.div`
   margin-top: 50px;
   margin-left: 2.125rem;
+  flex: 1;
   ${media.desktop`
   margin: 1rem 0 0 0;
   text-align: center;
@@ -396,6 +398,7 @@ const HeadDescription = styled.p`
   width: 100%;
   text-align: justify;
   line-height: 1.8;
+  white-space: pre-wrap;
 `
 
 const initialState = {
@@ -414,6 +417,18 @@ function reducer(state, action) {
 
     case 'ERROR':
       return { ...state, isLoading: false, error: action.error }
+
+    case 'UPDATE':
+      return {
+        ...state,
+        datas: {
+          ...state.datas,
+          listData: {
+            ...state.datas.listData,
+            items: [action.datas],
+          },
+        },
+      }
 
     case 'REMOVE_PLAYLISTITEM':
       return {
@@ -439,13 +454,15 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isOpen, setIsOpen] = useState(false)
 
+  const titleInputRef = useRef(null)
+
   const { access_token } = useSelector((state) => state.user)
 
   const { loading, error, datas } = state
 
   const [inputs, setInputs] = useState({
-    title: datas && datas.listData.items[0].snippet.description,
-    description: (datas && datas.listData.items[0].snippet.description) || '',
+    title: '',
+    description: '',
     isFocus: { title: false, description: false },
   })
 
@@ -564,8 +581,6 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
       target: { name },
     } = e
 
-    console.log('inputs')
-
     setInputs((prevState) => ({
       ...prevState,
       isFocus: {
@@ -573,7 +588,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         [name]: true,
       },
     }))
-  })
+  }, [])
 
   const onBlur = useCallback((e) => {
     const {
@@ -589,15 +604,41 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     }))
   }, [])
 
+  const onModalOpen = useCallback(() => {
+    setIsOpen(true)
+  }, [])
+
   const onModalClose = useCallback(() => {
     setIsOpen(false)
   }, [])
 
-  const onSave = useCallback(() => {}, [])
+  const onUpdate = useCallback(async () => {
+    const { data } = await ytApi.updatePlaylist(playlistId, access_token, {
+      title,
+      description,
+    })
+
+    dispatch({ type: 'UPDATE', datas: data })
+    setIsOpen(false)
+  }, [playlistId, access_token, title, description])
+
+  useEffect(() => {
+    isOpen && titleInputRef.current.focus()
+  }, [isOpen])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  useEffect(() => {
+    if (datas && datas.listData.items.length > 0) {
+      setInputs({
+        isFocus: { title: false, description: false },
+        title: datas.listData.items[0].snippet.title,
+        description: datas.listData.items[0].snippet.description,
+      })
+    }
+  }, [datas])
 
   if (error) return <div>에러가 발생했습니다!</div>
 
@@ -625,15 +666,19 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             </Skeleton>
           )}
           <HeadContent>
-            {datas ? (
-              <HeadTitle>{datas.listData.items[0].snippet.title}</HeadTitle>
-            ) : (
-              <Skeleton
-                style={{ marginBottom: '1rem' }}
-                variant="string"
-                height={33}
-              />
-            )}
+            <HeadTitle>
+              {datas ? (
+                datas.listData.items[0].snippet.title
+              ) : (
+                <Skeleton
+                  style={{ marginBottom: '1rem' }}
+                  variant="text"
+                  width={320}
+                  height={33}
+                />
+              )}
+            </HeadTitle>
+
             <div>
               {datas ? (
                 <>
@@ -642,7 +687,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                   <span>{datas.listData.items[0].snippet.channelTitle}</span>
                 </>
               ) : (
-                <Skeleton variant="string" />
+                <Skeleton variant="text" width={160} />
               )}
             </div>
             <SingCnt>
@@ -653,14 +698,14 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                   <span>{datas.listData.totalTime}</span>
                 </>
               ) : (
-                <Skeleton variant="string" />
+                <Skeleton variant="text" width={160} />
               )}
             </SingCnt>
             <HeadDescription>
               {datas ? (
                 datas.listData.items[0].snippet.description
               ) : (
-                <Skeleton variant="string" width="100%" maxWidth={680} />
+                <Skeleton variant="text" width="100%" />
               )}
             </HeadDescription>
             <ButtonBlock>
@@ -699,7 +744,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
               </div>
               <div>
                 {datas ? (
-                  <EditBtn onClick={() => setIsOpen(true)}>
+                  <EditBtn onClick={onModalOpen}>
                     <Icon
                       name="edit"
                       style={{
@@ -818,7 +863,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                 <InputBlock>
                   <Label
                     htmlFor="title"
-                    isValue={title}
+                    isValue={title !== ''}
                     isFocused={isFocus.title}
                   >
                     제목
@@ -833,6 +878,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                     name="title"
                     autoComplete="off"
                     isFocused={isFocus.title}
+                    ref={titleInputRef}
                   />
                 </InputBlock>
                 <Underline isFocused={isFocus.title}>
@@ -879,7 +925,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
               <button type="button" onClick={onModalClose}>
                 취소
               </button>
-              <button type="button" onClick={onSave}>
+              <button type="button" onClick={onUpdate}>
                 저장
               </button>
             </ActionBtn>

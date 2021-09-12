@@ -444,45 +444,42 @@ const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
         playlistItemsId={playlistItemsId}
       />
 
-      {loading ? (
-        <div>로딩중입니다</div>
-      ) : (
-        <Playerbar
-          show={show}
-          toggleShowVideo={toggleShowVideo}
-          onMouseDown={onMouseDown}
-          onMouseOver={onMouseOver}
-          onMouseMove={onMouseMove}
-          onMouseLeave={onMouseLeave}
-          onPause={onPause}
-          onPlay={onPlay}
-          onMute={onMute}
-          onUnMute={onUnMute}
-          onMouseDownAtVolume={onMouseDownAtVolume}
-          onMouseMoveAtVolume={onMouseMoveAtVolume}
-          onClickSetLoop={onClickSetLoop}
-          onSetShuffle={onSetShuffle}
-          nextVideo={nextVideo}
-          previousVideo={previousVideo}
-          isHover={isHover}
-          hoverTime={hoverTime}
-          hoverLeft={hoverLeft}
-          progress={progress}
-          playerState={playerState}
-          isMuted={isMuted}
-          isLoop={isLoop}
-          isShuffle={isShuffle}
-          volume={volume}
-          start={start}
-          end={end}
-          volumeEl={volumeEl}
-          videoProgressEl={videoProgressEl}
-          title={title}
-          thumbnail={thumbnail}
-          publishedAt={publishedAt}
-          channelTitle={channelTitle}
-        />
-      )}
+      <Playerbar
+        show={show}
+        toggleShowVideo={toggleShowVideo}
+        onMouseDown={onMouseDown}
+        onMouseOver={onMouseOver}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        onPause={onPause}
+        onPlay={onPlay}
+        onMute={onMute}
+        onUnMute={onUnMute}
+        onMouseDownAtVolume={onMouseDownAtVolume}
+        onMouseMoveAtVolume={onMouseMoveAtVolume}
+        onClickSetLoop={onClickSetLoop}
+        onSetShuffle={onSetShuffle}
+        nextVideo={nextVideo}
+        previousVideo={previousVideo}
+        isHover={isHover}
+        hoverTime={hoverTime}
+        hoverLeft={hoverLeft}
+        progress={progress}
+        playerState={playerState}
+        isMuted={isMuted}
+        isLoop={isLoop}
+        isShuffle={isShuffle}
+        volume={volume}
+        start={start}
+        end={end}
+        volumeEl={volumeEl}
+        videoProgressEl={videoProgressEl}
+        title={title}
+        thumbnail={thumbnail}
+        publishedAt={publishedAt}
+        channelTitle={channelTitle}
+        loading={loading}
+      />
     </>
   )
 }

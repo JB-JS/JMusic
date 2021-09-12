@@ -263,140 +263,149 @@ const Playerbar = ({
   publishedAt,
   volumeEl,
   videoProgressEl,
+  loading,
 }) => {
   return (
     <Container>
-      <ControlItem>
-        <SvgContainer>
-          <Icon
-            name="upArrow"
-            style={{
-              ...SvgStyle,
-              transform: show ? 'rotate(0deg)' : 'rotate(180deg)',
-              transition: 'transform 0.3s',
-            }}
-            onClick={toggleShowVideo}
-          />
-        </SvgContainer>
-        <SvgContainer>
-          {isLoop ? (
-            <Icon
-              name="oneRoop"
-              style={SvgStyle}
-              onClick={onClickSetLoop}
-              className="oneRoop"
-            />
-          ) : (
-            <Icon name="roop" style={SvgStyle} onClick={onClickSetLoop} />
-          )}
-        </SvgContainer>
-        <SvgContainer>
-          <Icon
-            name="shupple"
-            style={{ ...SvgStyle, fill: isShuffle && 'var(--red)' }}
-            onClick={onSetShuffle}
-          />
-        </SvgContainer>
-        <SvgContainer>
-          {isMuted ? (
-            <Icon name="unmute" style={SvgStyle} onClick={onUnMute} />
-          ) : (
-            <Icon name="mute" style={SvgStyle} onClick={onMute} />
-          )}
-        </SvgContainer>
-        <SliderBar
-          onMouseDown={onMouseDownAtVolume}
-          onMouseMove={onMouseMoveAtVolume}
-          ref={volumeEl}
-        >
-          <ProgressPadding>
-            <ProgressContainer>
-              <ProgressBg style={{ background: '#909090' }} />
-              <ProgressBar
-                progress={volume}
-                style={{ background: 'var(--sound-progress-bg)' }}
-              />
-            </ProgressContainer>
-          </ProgressPadding>
-          <SoundCircle left={volume} />
-        </SliderBar>
-      </ControlItem>
-
-      <ControlItem>
-        <VideoInfoContainer>
-          <VideoThumbnail>
-            <Thumbnail src={thumbnail} alt={title} />
-          </VideoThumbnail>
-          <VideoInfo>
-            <Title href="/">{title}</Title>
-            <Info>
-              <ChannelTitle>{channelTitle}</ChannelTitle>
-              <span> • </span>
-              <Year>{new Date(publishedAt).getFullYear()}</Year>
-            </Info>
-          </VideoInfo>
-        </VideoInfoContainer>
-      </ControlItem>
-
-      <ControlItem>
-        <TimeInfo>
-          {start} / {end}
-        </TimeInfo>
-        <SvgContainer>
-          <Icon name="prevArrow" style={SvgStyle} onClick={previousVideo} />
-        </SvgContainer>
-
-        <SvgContainer>
-          {playerState === 1 ? (
-            <Icon
-              name="pause"
-              style={{
-                ...SvgStyle,
-                width: '40px',
-                height: '40px',
-              }}
-              onClick={onPause}
-            />
-          ) : (
-            (playerState === 2 ||
-              playerState === 0 ||
-              playerState === undefined) && (
+      {loading ? (
+        <div>..로딩중입니다</div>
+      ) : (
+        <>
+          <ControlItem>
+            <SvgContainer>
               <Icon
-                name="play"
+                name="upArrow"
                 style={{
                   ...SvgStyle,
-                  width: '40px',
-                  height: '40px',
+                  transform: show ? 'rotate(0deg)' : 'rotate(180deg)',
+                  transition: 'transform 0.3s',
                 }}
-                onClick={onPlay}
+                onClick={toggleShowVideo}
               />
-            )
+            </SvgContainer>
+            <SvgContainer>
+              {isLoop ? (
+                <Icon
+                  name="oneRoop"
+                  style={SvgStyle}
+                  onClick={onClickSetLoop}
+                  className="oneRoop"
+                />
+              ) : (
+                <Icon name="roop" style={SvgStyle} onClick={onClickSetLoop} />
+              )}
+            </SvgContainer>
+            <SvgContainer>
+              <Icon
+                name="shupple"
+                style={{ ...SvgStyle, fill: isShuffle && 'var(--red)' }}
+                onClick={onSetShuffle}
+              />
+            </SvgContainer>
+            <SvgContainer>
+              {isMuted ? (
+                <Icon name="unmute" style={SvgStyle} onClick={onUnMute} />
+              ) : (
+                <Icon name="mute" style={SvgStyle} onClick={onMute} />
+              )}
+            </SvgContainer>
+            <SliderBar
+              onMouseDown={onMouseDownAtVolume}
+              onMouseMove={onMouseMoveAtVolume}
+              ref={volumeEl}
+            >
+              <ProgressPadding>
+                <ProgressContainer>
+                  <ProgressBg style={{ background: '#909090' }} />
+                  <ProgressBar
+                    progress={volume}
+                    style={{ background: 'var(--sound-progress-bg)' }}
+                  />
+                </ProgressContainer>
+              </ProgressPadding>
+              <SoundCircle left={volume} />
+            </SliderBar>
+          </ControlItem>
+
+          <ControlItem>
+            <VideoInfoContainer>
+              <VideoThumbnail>
+                <Thumbnail src={thumbnail} alt={title} />
+              </VideoThumbnail>
+              <VideoInfo>
+                <Title href="/">{title}</Title>
+                <Info>
+                  <ChannelTitle>{channelTitle}</ChannelTitle>
+                  <span> • </span>
+                  <Year>{new Date(publishedAt).getFullYear()}</Year>
+                </Info>
+              </VideoInfo>
+            </VideoInfoContainer>
+          </ControlItem>
+
+          <ControlItem>
+            <TimeInfo>
+              {start} / {end}
+            </TimeInfo>
+            <SvgContainer>
+              <Icon name="prevArrow" style={SvgStyle} onClick={previousVideo} />
+            </SvgContainer>
+
+            <SvgContainer>
+              {playerState === 1 ? (
+                <Icon
+                  name="pause"
+                  style={{
+                    ...SvgStyle,
+                    width: '40px',
+                    height: '40px',
+                  }}
+                  onClick={onPause}
+                />
+              ) : (
+                (playerState === 2 ||
+                  playerState === 0 ||
+                  playerState === undefined) && (
+                  <Icon
+                    name="play"
+                    style={{
+                      ...SvgStyle,
+                      width: '40px',
+                      height: '40px',
+                    }}
+                    onClick={onPlay}
+                  />
+                )
+              )}
+            </SvgContainer>
+
+            <SvgContainer>
+              <Icon name="nextArrow" style={SvgStyle} onClick={nextVideo} />
+            </SvgContainer>
+          </ControlItem>
+
+          {isHover && (
+            <HoverTimeInfo left={hoverLeft}>{hoverTime}</HoverTimeInfo>
           )}
-        </SvgContainer>
-
-        <SvgContainer>
-          <Icon name="nextArrow" style={SvgStyle} onClick={nextVideo} />
-        </SvgContainer>
-      </ControlItem>
-
-      {isHover && <HoverTimeInfo left={hoverLeft}>{hoverTime}</HoverTimeInfo>}
-      <Progress
-        onMouseDown={onMouseDown}
-        onMouseOver={onMouseOver}
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
-        ref={videoProgressEl}
-      >
-        <ProgressPadding>
-          <ProgressContainer>
-            <ProgressBg />
-            <ProgressBar progress={progress} />
-          </ProgressContainer>
-        </ProgressPadding>
-        <CircleContainer left={progress}>
-          <Circle />
-        </CircleContainer>
-      </Progress>
+          <Progress
+            onMouseDown={onMouseDown}
+            onMouseOver={onMouseOver}
+            onMouseMove={onMouseMove}
+            onMouseLeave={onMouseLeave}
+            ref={videoProgressEl}
+          >
+            <ProgressPadding>
+              <ProgressContainer>
+                <ProgressBg />
+                <ProgressBar progress={progress} />
+              </ProgressContainer>
+            </ProgressPadding>
+            <CircleContainer left={progress}>
+              <Circle />
+            </CircleContainer>
+          </Progress>
+        </>
+      )}
     </Container>
   )
 }
