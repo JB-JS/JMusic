@@ -33,12 +33,14 @@ const GlobalStyle = createGlobalStyle`
     --tracklist-hover-bg: rgba(0, 0, 0, 0.06);
     --googleBtn-color: #fff; 
     --scrollbar-width: 15px;
-
+    --contextmenu-bg: rgba(246, 246, 246, 0.72)
+    
     @media (max-width: 760px) {
       --sidebar-width: 33vw;
     }
-  }
 
+  }
+  
   @media (prefers-color-scheme: dark) {
     :root {
       --theme-color: #fff;
@@ -61,7 +63,8 @@ const GlobalStyle = createGlobalStyle`
       --player-content-color: 
       --sound-progress-bg: #fff;
       --tracklist-hover-bg: rgba(255, 255, 255, 0.06);
-      --googleBtn-color: #000; 
+      --googleBtn-color: #000;
+      --contextmenu-bg: rgba(40, 40, 40, 0.7);
       
     }
     .MuiSkeleton-root {

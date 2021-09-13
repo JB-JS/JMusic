@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
 import { useRef } from 'react'
 import { update } from '../../features/playlists/playlistsSlice'
+import ContextMenu from '../../components/ContextMenu'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -402,6 +403,28 @@ const HeadDescription = styled.p`
   white-space: pre-wrap;
 `
 
+const ContextList = styled.ul``
+
+const ContextItem = styled.li`
+  padding: 0 40px 0 10px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgba(60, 60, 60, 0.7);
+  }
+
+  & > span {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+`
+
 const initialState = {
   isLoading: false,
   datas: null,
@@ -454,20 +477,31 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isOpen, setIsOpen] = useState(false)
-
-  const titleInputRef = useRef(null)
-
-  const { access_token } = useSelector((state) => state.user)
-
-  const { loading, error, datas } = state
-
-  const reduxDispatch = useDispatch()
-
+  const [isContextMenu, setIsContextMenu] = useState(false)
+  const [location, setLocation] = useState({
+    x: 0,
+    y: 0,
+  })
+  const [over, setOver] = useState({
+    overX: false,
+  })
   const [inputs, setInputs] = useState({
     title: '',
     description: '',
     isFocus: { title: false, description: false },
   })
+
+  const titleInputRef = useRef(null)
+  const menuRef = React.createRef()
+
+  const {
+    playlists,
+    user: { access_token },
+  } = useSelector((state) => state)
+
+  const { loading, error, datas } = state
+
+  const reduxDispatch = useDispatch()
 
   const { title, description, isFocus } = inputs
 
@@ -615,6 +649,14 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     setIsOpen(false)
   }, [])
 
+  const onOpenContextMenu = useCallback((e) => {
+    const rect = e.target.getBoundingClientRect()
+    console.log(rect)
+
+    setLocation({ x: rect.x, y: rect.y + rect.height })
+    setIsContextMenu(true)
+  }, [])
+
   const onUpdate = useCallback(async () => {
     const { data } = await ytApi.updatePlaylist(playlistId, access_token, {
       title,
@@ -633,6 +675,12 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  useEffect(() => {
+    menuRef.current &&
+      menuRef.current.offsetWidth + location.x > window.innerWidth &&
+      setOver({ overX: true, overY: false })
+  }, [location.x])
 
   useEffect(() => {
     if (datas && datas.listData.items.length > 0) {
@@ -831,19 +879,8 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                             marginLeft: '16px',
                             cursor: 'pointer',
                           }}
+                          onClick={onOpenContextMenu}
                         />
-                        // <Icon
-                        //   name="playlistRemove"
-                        //   width="18"
-                        //   height="18"
-                        //   data-itemid={item.id}
-                        //   onClick={onPlaylistRemoveItem}
-                        //   style={{
-                        //     fill: '#aaa',
-                        //     marginLeft: '0.5rem',
-                        //     cursor: 'pointer',
-                        //   }}
-                        // />
                       }
                     </div>
                   </td>
@@ -941,6 +978,48 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             </ActionBtn>
           </Form>
         </Modal>
+      )}
+      {isContextMenu && (
+        <ContextMenu
+          location={location}
+          over={over}
+          ref={menuRef}
+          setIsContextMenu={setIsContextMenu}
+        >
+          <ContextList>
+            <ContextItem>
+              <span>재생목록에서 삭제</span>
+              <Icon
+                name="playlistRemove"
+                width="18"
+                height="18"
+                onClick={onPlaylistRemoveItem}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  fill: '#aaa',
+                  marginLeft: '0.5rem',
+                  cursor: 'pointer',
+                }}
+              />
+            </ContextItem>
+            <ContextItem>
+              <span>재생목록에 추가</span>
+              <Icon
+                name="playlistAdd"
+                width="18"
+                height="18"
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  fill: '#aaa',
+                  marginLeft: '0.5rem',
+                  cursor: 'pointer',
+                }}
+              />
+            </ContextItem>
+          </ContextList>
+        </ContextMenu>
       )}
     </InfoContainer>
   )
