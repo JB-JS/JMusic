@@ -477,7 +477,10 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isOpen, setIsOpen] = useState(false)
-  const [isContextMenu, setIsContextMenu] = useState(false)
+  const [contextMenu, setContextMenu] = useState({
+    show: false,
+    itemId: null,
+  })
   const [location, setLocation] = useState({
     x: 0,
     y: 0,
@@ -589,19 +592,6 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     })
   }
 
-  const onPlaylistRemoveItem = (e) => {
-    const id = e.currentTarget.dataset.itemid
-
-    ytApi.removePlaylistItems(id, access_token)
-
-    dispatch({
-      type: 'REMOVE_PLAYLISTITEM',
-      payload: {
-        id,
-      },
-    })
-  }
-
   const onChange = useCallback((e) => {
     const {
       target: { name, value },
@@ -649,12 +639,29 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     setIsOpen(false)
   }, [])
 
+  const onRemovePlaylistItem = useCallback((e) => {
+    const id = e.currentTarget.dataset.itemid
+
+    ytApi.removePlaylistItems(id, access_token)
+
+    dispatch({
+      type: 'REMOVE_PLAYLISTITEM',
+      payload: {
+        id,
+      },
+    })
+  }, [])
+
   const onOpenContextMenu = useCallback((e) => {
     const rect = e.target.getBoundingClientRect()
     console.log(rect)
 
     setLocation({ x: rect.x, y: rect.y + rect.height })
-    setIsContextMenu(true)
+
+    setContextMenu((prevState) => ({
+      ...prevState,
+      show: true,
+    }))
   }, [])
 
   const onUpdate = useCallback(async () => {
@@ -680,7 +687,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     menuRef.current &&
       menuRef.current.offsetWidth + location.x > window.innerWidth &&
       setOver({ overX: true, overY: false })
-  }, [location.x])
+  }, [location.x, menuRef])
 
   useEffect(() => {
     if (datas && datas.listData.items.length > 0) {
@@ -860,6 +867,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                   <td>
                     <div>{item.snippet.videoOwnerChannelTitle}</div>
                   </td>
+                  {console.log(item)}
                   <td>
                     <div
                       style={{
@@ -879,6 +887,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                             marginLeft: '16px',
                             cursor: 'pointer',
                           }}
+                          data-id={item.id}
                           onClick={onOpenContextMenu}
                         />
                       }
@@ -979,21 +988,21 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
           </Form>
         </Modal>
       )}
-      {isContextMenu && (
+      {contextMenu.show && (
         <ContextMenu
           location={location}
           over={over}
           ref={menuRef}
-          setIsContextMenu={setIsContextMenu}
+          setIsContextMenu={setContextMenu}
+          contextMenu={contextMenu}
         >
           <ContextList>
-            <ContextItem>
+            <ContextItem onClick={onRemovePlaylistItem}>
               <span>재생목록에서 삭제</span>
               <Icon
                 name="playlistRemove"
                 width="18"
                 height="18"
-                onClick={onPlaylistRemoveItem}
                 style={{
                   position: 'absolute',
                   right: '10px',
