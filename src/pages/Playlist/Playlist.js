@@ -639,8 +639,8 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     setIsOpen(false)
   }, [])
 
-  const onRemovePlaylistItem = useCallback((e) => {
-    const id = e.currentTarget.dataset.itemid
+  const onRemovePlaylistItem = useCallback(() => {
+    const id = contextMenu.itemId
 
     ytApi.removePlaylistItems(id, access_token)
 
@@ -650,7 +650,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         id,
       },
     })
-  }, [])
+
+    setContextMenu((prevState) => ({ ...prevState, show: false }))
+  }, [access_token, contextMenu.itemId])
 
   const onOpenContextMenu = useCallback((e) => {
     const rect = e.target.getBoundingClientRect()
@@ -661,6 +663,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     setContextMenu((prevState) => ({
       ...prevState,
       show: true,
+      itemId: e.target.dataset.id,
     }))
   }, [])
 
@@ -687,7 +690,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     menuRef.current &&
       menuRef.current.offsetWidth + location.x > window.innerWidth &&
       setOver({ overX: true, overY: false })
-  }, [location.x, menuRef])
+  }, [location.x])
 
   useEffect(() => {
     if (datas && datas.listData.items.length > 0) {
@@ -867,7 +870,6 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                   <td>
                     <div>{item.snippet.videoOwnerChannelTitle}</div>
                   </td>
-                  {console.log(item)}
                   <td>
                     <div
                       style={{
