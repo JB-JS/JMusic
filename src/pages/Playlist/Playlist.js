@@ -12,6 +12,7 @@ import Skeleton from '@material-ui/lab/Skeleton'
 import { useRef } from 'react'
 import { update } from '../../features/playlists/playlistsSlice'
 import ContextMenu from '../../components/ContextMenu'
+import PlaylistItems from '../../components/PlaylistItems/PlaylistItems'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -403,16 +404,40 @@ const HeadDescription = styled.p`
   white-space: pre-wrap;
 `
 
+const HideList = styled.ul`
+  position: absolute;
+  bottom: 0;
+  right: -2px;
+  display: none;
+  max-width: 385px;
+  min-width: 185px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 8px 40px rgba(0, 0, 0, 0.25);
+  background: var(--contextmenu-bg);
+  backdrop-filter: blur(70px) saturate(210%);
+  transform: ${(props) =>
+    props.over ? 'translateX(-100%)' : 'translate(100%)'};
+`
+
 const ContextList = styled.ul``
 
+const DropDown = styled.div``
+
 const ContextItem = styled.li`
+  position: relative;
   padding: 0 40px 0 10px;
   height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   cursor: pointer;
   border-radius: 4px;
+
+  & > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
 
   &:hover {
     background-color: rgba(60, 60, 60, 0.7);
@@ -422,6 +447,10 @@ const ContextItem = styled.li`
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+
+  &:hover > ${HideList} {
+    display: block;
   }
 `
 
@@ -1000,34 +1029,41 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         >
           <ContextList>
             <ContextItem onClick={onRemovePlaylistItem}>
-              <span>재생목록에서 삭제</span>
-              <Icon
-                name="playlistRemove"
-                width="18"
-                height="18"
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  fill: '#aaa',
-                  marginLeft: '0.5rem',
-                  cursor: 'pointer',
-                }}
-              />
+              <div>
+                <span>재생목록에서 삭제</span>
+                <Icon
+                  name="playlistRemove"
+                  width="18"
+                  height="18"
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    fill: '#aaa',
+                    marginLeft: '0.5rem',
+                    cursor: 'pointer',
+                  }}
+                />
+              </div>
             </ContextItem>
             <ContextItem>
-              <span>재생목록에 추가</span>
-              <Icon
-                name="playlistAdd"
-                width="18"
-                height="18"
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  fill: '#aaa',
-                  marginLeft: '0.5rem',
-                  cursor: 'pointer',
-                }}
-              />
+              <div>
+                <DropDown>재생목록에 추가</DropDown>
+                <Icon
+                  name="playlistAdd"
+                  width="18"
+                  height="18"
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    fill: '#aaa',
+                    marginLeft: '0.5rem',
+                    cursor: 'pointer',
+                  }}
+                />
+              </div>
+              <HideList over={over.overX}>
+                {playlists.length > 0 && <PlaylistItems items={playlists} />}
+              </HideList>
             </ContextItem>
           </ContextList>
         </ContextMenu>
