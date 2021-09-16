@@ -10,9 +10,9 @@ import Modal from '../../components/Modal/Modal'
 import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
 import { useRef } from 'react'
-import { update } from '../../features/playlists/playlistsSlice'
+import { insert, update } from '../../features/playlists/playlistsSlice'
 import ContextMenu from '../../components/ContextMenu'
-import PlaylistItems from '../../components/PlaylistItems/PlaylistItems'
+import PlaylistItems from '../../components/PlaylistItems'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -411,14 +411,51 @@ const HideList = styled.ul`
   display: none;
   max-width: 385px;
   min-width: 185px;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: scroll;
+  padding: 15px 0;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2),
     0 8px 40px rgba(0, 0, 0, 0.25);
   background: var(--contextmenu-bg);
   backdrop-filter: blur(70px) saturate(210%);
+  z-index: 9992;
   transform: ${(props) =>
     props.over ? 'translateX(-100%)' : 'translate(100%)'};
+
+  & > li {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    height: 32px;
+
+    &:hover {
+      background-color: rgba(60, 60, 60, 0.7);
+    }
+  }
+`
+
+const PlaylistIcon = styled.span`
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-right: 0.5rem;
+    background-image: url('https://music.apple.com/assets/web-nav/sidebar_GenericPlaylist.svg');
+    background-repeat: no-repeat;
+    opacity: 0.5;
+    @media only screen and (prefers-color-scheme: dark) {
+      background-image: url('https://music.apple.com/assets/web-nav/sidebar_GenericPlaylist_onDark.svg');
+    }
+  }
+`
+
+const PlaylistTitle = styled.span`
+  white-space: nowrap;
+  overflow: hidden;
 `
 
 const ContextList = styled.ul``
@@ -489,9 +526,25 @@ function reducer(state, action) {
         datas: {
           ...state.datas,
           itemData: {
+            ...state.datas.itemData,
             items: state.datas.itemData.items.filter(
               (item) => item.id !== action.payload.id
             ),
+          },
+        },
+      }
+
+    case 'INSERT_PLAYLISTITEM':
+      return {
+        ...state,
+        datas: {
+          ...state.datas,
+          listData: {
+            ...state.datas.listData,
+          },
+          itemData: {
+            ...state.datas.itemData,
+            items: state.datas.itemData.items.concat(action.payload),
           },
         },
       }
@@ -509,6 +562,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const [contextMenu, setContextMenu] = useState({
     show: false,
     itemId: null,
+    resourceId: null,
   })
   const [location, setLocation] = useState({
     x: 0,
@@ -527,7 +581,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const menuRef = React.createRef()
 
   const {
-    playlists,
+    playlists: { playlists },
     user: { access_token },
   } = useSelector((state) => state)
 
@@ -683,7 +737,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     setContextMenu((prevState) => ({ ...prevState, show: false }))
   }, [access_token, contextMenu.itemId])
 
-  const onOpenContextMenu = useCallback((e) => {
+  const onOpenContextMenu = useCallback((e, resourceId) => {
     const rect = e.target.getBoundingClientRect()
     console.log(rect)
 
@@ -693,8 +747,24 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
       ...prevState,
       show: true,
       itemId: e.target.dataset.id,
+      resourceId,
     }))
   }, [])
+
+  const onAddPlaylistData = useCallback(
+    async (playlistId) => {
+      const { data } = await ytApi.insertPlaylistData(
+        {
+          playlistId,
+          resourceId: contextMenu.resourceId,
+        },
+        access_token
+      )
+
+      dispatch({ type: 'INSERT_PLAYLISTITEM', payload: { ...data } })
+    },
+    [contextMenu.resourceId, access_token]
+  )
 
   const onUpdate = useCallback(async () => {
     const { data } = await ytApi.updatePlaylist(playlistId, access_token, {
@@ -908,6 +978,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                       }}
                     >
                       {item.duration}
+
                       {
                         <Icon
                           name="contextMenu"
@@ -919,7 +990,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                             cursor: 'pointer',
                           }}
                           data-id={item.id}
-                          onClick={onOpenContextMenu}
+                          onClick={(e) =>
+                            onOpenContextMenu(e, item.snippet.resourceId)
+                          }
                         />
                       }
                     </div>
@@ -1062,7 +1135,16 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                 />
               </div>
               <HideList over={over.overX}>
-                {playlists.length > 0 && <PlaylistItems items={playlists} />}
+                {playlists.length > 0 &&
+                  playlists.map((playlist) => (
+                    <li
+                      key={playlist.id}
+                      onClick={() => onAddPlaylistData(playlist.id)}
+                    >
+                      <PlaylistIcon />
+                      <PlaylistTitle>{playlist.snippet.title}</PlaylistTitle>
+                    </li>
+                  ))}
               </HideList>
             </ContextItem>
           </ContextList>

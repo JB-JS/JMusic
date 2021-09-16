@@ -12,11 +12,16 @@ export const playlistsSlice = createSlice({
       return { ...state, isLoading: true }
     },
     success(state, action) {
-      console.log(action.payload)
       return { ...state, isLoading: false, playlists: action.payload }
     },
     error(state, action) {
       return { ...state, isLoading: false, error: action.payload }
+    },
+    insert(state, action) {
+      return {
+        ...state,
+        playlists: state.playlists.concat(action.payload),
+      }
     },
     update(state, action) {
       return {
@@ -31,6 +36,7 @@ export const playlistsSlice = createSlice({
   },
 })
 
-export const { loading, success, error, update } = playlistsSlice.actions
+export const { loading, success, error, update, insert } =
+  playlistsSlice.actions
 
 export default playlistsSlice.reducer
