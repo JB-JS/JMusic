@@ -759,10 +759,10 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   }, [])
 
   const onAddPlaylistData = useCallback(
-    async (playlistId) => {
+    async (insertPlaylistId) => {
       const { data } = await ytApi.insertPlaylistData(
         {
-          playlistId,
+          playlistId: insertPlaylistId,
           resourceId: contextMenu.resourceId,
         },
         access_token
@@ -778,25 +778,25 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         },
       } = await ytApi.getVideoTime(contextMenu.resourceId.videoId, access_token)
 
-      const [min, sec] = duration
-        .substring(2, duration.length - 1)
-        .split('M')
-        .join('')
+      if (insertPlaylistId === playlistId) {
+        const [min, sec] = duration
+          .substring(2, duration.length - 1)
+          .split('M')
+          .join('')
 
-      console.log(min, sec, min * 60 + +sec)
-
-      dispatch({
-        type: 'INSERT_PLAYLISTITEM',
-        payload: {
-          data: {
-            ...data,
-            duration: `${min}:${sec >= 10 ? sec : `0${sec || '0'}`}`,
+        dispatch({
+          type: 'INSERT_PLAYLISTITEM',
+          payload: {
+            data: {
+              ...data,
+              duration: `${min}:${sec >= 10 ? sec : `0${sec || '0'}`}`,
+            },
+            duration: min * 60 + +sec,
           },
-          duration: min * 60 + +sec,
-        },
-      })
+        })
+      }
     },
-    [contextMenu.resourceId, access_token]
+    [contextMenu.resourceId, access_token, playlistId]
   )
 
   const onUpdate = useCallback(async () => {
