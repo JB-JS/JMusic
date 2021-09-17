@@ -7,12 +7,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useState } from 'react'
 import { media } from '../../lib/utils/index'
 import Modal from '../../components/Modal/Modal'
-import Typography from '@material-ui/core/Typography'
 import Skeleton from '@material-ui/lab/Skeleton'
 import { useRef } from 'react'
-import { insert, update } from '../../features/playlists/playlistsSlice'
+import { update } from '../../features/playlists/playlistsSlice'
 import ContextMenu from '../../components/ContextMenu'
-import PlaylistItems from '../../components/PlaylistItems'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -456,6 +454,7 @@ const PlaylistIcon = styled.span`
 const PlaylistTitle = styled.span`
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const ContextList = styled.ul``
@@ -725,6 +724,8 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
   const onRemovePlaylistItem = useCallback(() => {
     const id = contextMenu.itemId
 
+    console.log(contextMenu.itemId)
+
     ytApi.removePlaylistItems(id, access_token)
 
     dispatch({
@@ -760,6 +761,13 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         },
         access_token
       )
+
+      const time = await ytApi.getVideoTime(
+        contextMenu.resourceId.videoId,
+        access_token
+      )
+
+      console.log('time', time)
 
       dispatch({ type: 'INSERT_PLAYLISTITEM', payload: { ...data } })
     },
@@ -1103,7 +1111,13 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
           <ContextList>
             <ContextItem onClick={onRemovePlaylistItem}>
               <div>
-                <span>재생목록에서 삭제</span>
+                <span
+                  onClick={() =>
+                    setContextMenu({ ...contextMenu, show: false })
+                  }
+                >
+                  재생목록에서 삭제
+                </span>
                 <Icon
                   name="playlistRemove"
                   width="18"
@@ -1120,7 +1134,13 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             </ContextItem>
             <ContextItem>
               <div>
-                <DropDown>재생목록에 추가</DropDown>
+                <DropDown
+                  onClick={() =>
+                    setContextMenu({ ...contextMenu, show: false })
+                  }
+                >
+                  재생목록에 추가
+                </DropDown>
                 <Icon
                   name="playlistAdd"
                   width="18"
@@ -1139,7 +1159,10 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                   playlists.map((playlist) => (
                     <li
                       key={playlist.id}
-                      onClick={() => onAddPlaylistData(playlist.id)}
+                      onClick={() => {
+                        onAddPlaylistData(playlist.id)
+                        setContextMenu({ ...contextMenu, show: false })
+                      }}
                     >
                       <PlaylistIcon />
                       <PlaylistTitle>{playlist.snippet.title}</PlaylistTitle>
