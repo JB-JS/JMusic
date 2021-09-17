@@ -21,6 +21,10 @@ const Thumbnail = styled.img`
 
 const InfoContainer = styled.div`
   padding: 2.5rem;
+
+  ${media.mobile`
+    padding: 2.5rem 1rem;
+  `}
 `
 
 const ItemHead = styled.div`
@@ -188,6 +192,7 @@ const ItemTitle = styled.h2`
   text-overflow: ellipsis;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.9);
+  padding-right: 10px;
 `
 
 const Artist = styled.div`
@@ -540,10 +545,11 @@ function reducer(state, action) {
           ...state.datas,
           listData: {
             ...state.datas.listData,
+            totalTime: state.datas.listData.totalTime + action.payload.duration,
           },
           itemData: {
             ...state.datas.itemData,
-            items: state.datas.itemData.items.concat(action.payload),
+            items: state.datas.itemData.items.concat(action.payload.data),
           },
         },
       }
@@ -633,7 +639,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
       })
 
     return {
-      listData: { ...listData, totalTime: HourMinute(time) },
+      listData: { ...listData, totalTime: time },
       itemData: {
         ...itemData,
         items: [
@@ -762,14 +768,33 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
         access_token
       )
 
-      const time = await ytApi.getVideoTime(
-        contextMenu.resourceId.videoId,
-        access_token
-      )
+      const {
+        data: {
+          items: [
+            {
+              contentDetails: { duration },
+            },
+          ],
+        },
+      } = await ytApi.getVideoTime(contextMenu.resourceId.videoId, access_token)
 
-      console.log('time', time)
+      const [min, sec] = duration
+        .substring(2, duration.length - 1)
+        .split('M')
+        .join('')
 
-      dispatch({ type: 'INSERT_PLAYLISTITEM', payload: { ...data } })
+      console.log(min, sec, min * 60 + +sec)
+
+      dispatch({
+        type: 'INSERT_PLAYLISTITEM',
+        payload: {
+          data: {
+            ...data,
+            duration: `${min}:${sec >= 10 ? sec : `0${sec || '0'}`}`,
+          },
+          duration: min * 60 + +sec,
+        },
+      })
     },
     [contextMenu.resourceId, access_token]
   )
@@ -813,7 +838,6 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
 
   return (
     <InfoContainer>
-      {console.log(datas)}
       <>
         <ItemHead>
           {datas && datas.itemData ? (
@@ -864,7 +888,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                 <>
                   <span>노래 {datas.itemData.items.length}곡</span>
                   <span> • </span>
-                  <span>{datas.listData.totalTime}</span>
+                  <span>{HourMinute(datas.listData.totalTime)}</span>
                 </>
               ) : (
                 <Skeleton variant="text" width={160} />
@@ -943,9 +967,9 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
               <Thead width="40%" style={{ paddingLeft: '0.375rem' }}>
                 노래
               </Thead>
-              <Thead width="25%">앨범</Thead>
-              <Thead width="25%">아티스트</Thead>
-              <Thead width="15%">시간</Thead>
+              <Thead width="20%">앨범</Thead>
+              <Thead width="30%">아티스트</Thead>
+              <Thead width="10%">시간</Thead>
             </tr>
           </thead>
           <Tbody>
