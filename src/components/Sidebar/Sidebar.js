@@ -54,7 +54,7 @@ const Logo = styled.div`
 
 const Nav = styled.nav`
   padding: 0 1.5625rem;
-  margin: 1rem;
+  margin: 1rem 0;
   overflow: auto;
 `
 

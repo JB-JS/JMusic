@@ -293,9 +293,9 @@ const Player = ({
         })
       )
 
-      volumeStorage.get() && target.setVolume(volumeStorage.get())
+      target.unMute()
 
-      target.playVideo()
+      volumeStorage.get() && target.setVolume(volumeStorage.get())
 
       window.addEventListener('keydown', (e) => {
         if (e.key === ' ') {
