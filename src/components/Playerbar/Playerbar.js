@@ -23,11 +23,12 @@ const ProgressContainer = styled.div`
 const Container = styled.div`
   position: fixed;
   bottom: 0;
-  right: var(--scrollbar-width);
+  right: ${(props) => props.scrollWidth}px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: calc(100% - var(--sidebar-width) - var(--scrollbar-width));
+  width: ${(props) =>
+    `calc(100% - var(--sidebar-width) - ${props.scrollWidth}px)`};
   height: var(--player-bar-height);
   background-color: var(--player-bg);
   backdrop-filter: saturate(50%) blur(20px);
@@ -45,7 +46,7 @@ const Container = styled.div`
     ${media.mobile`display: none;`}
   }
 
-  ${media.mobile`width: 100%; `}
+  ${media.mobile`width: 100%;`}
 `
 
 const ControlItem = styled.div`
@@ -264,9 +265,10 @@ const Playerbar = ({
   volumeEl,
   videoProgressEl,
   loading,
+  scrollWidth,
 }) => {
   return (
-    <Container>
+    <Container scrollWidth={scrollWidth}>
       {loading ? (
         <div>..로딩중입니다</div>
       ) : (

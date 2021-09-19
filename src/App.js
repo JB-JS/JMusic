@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import GlobalStyle from './components/GlobalStyle'
@@ -37,12 +37,14 @@ const App = () => {
     isPlayed: false,
     type: 'video',
   })
-
+  const [scrollWidth, setScrollWidth] = useState(0)
   const { playlistId, videoId, isPlayed, type } = video
 
   const { isLoggedIn } = useSelector((state) => state.user)
 
   const isHeader = useMediaQuery({ query: '(max-width: 500px)' })
+
+  const pageRef = useRef(null)
 
   const onClick = (e) => {
     setVideo({
@@ -52,13 +54,23 @@ const App = () => {
     })
   }
 
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      console.log(
+        'resizing',
+        pageRef.current.offsetWidth - pageRef.current.scrollWidth
+      )
+      setScrollWidth(pageRef.current.offsetWidth - pageRef.current.scrollWidth)
+    })
+  }, [])
+
   return (
     <>
       <BrowserRouter>
         <GlobalStyle />
         <GridContainer>
           {isHeader ? <Header /> : <Sidebar />}
-          <Page played={isPlayed}>
+          <Page played={isPlayed} ref={pageRef}>
             <Switch>
               {!isLoggedIn && (
                 <Route
@@ -107,6 +119,7 @@ const App = () => {
                 videoId={videoId}
                 playlistId={playlistId}
                 playlistItemsId={playlistItemsId}
+                scrollWidth={scrollWidth}
               />
             )}
           </Page>

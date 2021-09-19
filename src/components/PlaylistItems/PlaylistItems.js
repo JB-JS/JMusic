@@ -49,7 +49,7 @@ const Item = styled.li`
   background-color: ${({ current }) => current && 'var(--sidebar-selected-bg)'};
 `
 
-const PlaylistItems = ({ title, items }) => {
+const PlaylistItems = ({ title, items, setToggleSidebar }) => {
   return (
     <>
       {title && <Title>{title}</Title>}
@@ -57,7 +57,7 @@ const PlaylistItems = ({ title, items }) => {
         {items &&
           items.length > 0 &&
           items.map((item) => (
-            <Item key={item.id}>
+            <Item key={item.id} onClick={setToggleSidebar}>
               <SLink to={`/playlist/${item.id}`}>
                 <PlaylistTitle>{item.snippet.title}</PlaylistTitle>
               </SLink>

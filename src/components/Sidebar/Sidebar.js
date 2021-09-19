@@ -88,7 +88,7 @@ const Menu = styled(NavLink)`
   }
 `
 
-const Sidebar = ({ toggleSidebar }) => {
+const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
   const { displayName, photoURL, isLoggedIn, access_token } = useSelector(
     (state) => state.user
   )
@@ -165,7 +165,11 @@ const Sidebar = ({ toggleSidebar }) => {
         </ul>
 
         {isLoggedIn && playlists.length > 0 && (
-          <PlaylistItems title="플레이리스트" items={playlists} />
+          <PlaylistItems
+            title="플레이리스트"
+            items={playlists}
+            setToggleSidebar={setToggleSidebar}
+          />
         )}
       </Nav>
 

@@ -68,7 +68,13 @@ function reducer(state, action) {
   }
 }
 
-const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
+const Player = ({
+  videoId,
+  type,
+  playlistId,
+  playlistItemsId,
+  scrollWidth,
+}) => {
   // const [state] = useReducer(reducer, initialState)
   const [iframe, setIframe] = useState(null)
   const state = useSelector((state) => state.player)
@@ -289,6 +295,8 @@ const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
 
       volumeStorage.get() && target.setVolume(volumeStorage.get())
 
+      target.playVideo()
+
       window.addEventListener('keydown', (e) => {
         if (e.key === ' ') {
           e.preventDefault()
@@ -479,6 +487,7 @@ const Player = ({ videoId, type, playlistId, playlistItemsId }) => {
         publishedAt={publishedAt}
         channelTitle={channelTitle}
         loading={loading}
+        scrollWidth={scrollWidth}
       />
     </>
   )

@@ -91,7 +91,7 @@ const Header = () => {
           </svg>
         </LogoBlock>
       </StyledHeader>
-      <Sidebar toggleSidebar={toggleSidebar} />
+      <Sidebar toggleSidebar={toggleSidebar} onClick={setToggleSidebar} />
     </>
   )
 }
