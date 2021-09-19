@@ -46,22 +46,21 @@ const Container = styled.div`
     ${media.mobile`display: none;`}
   }
 
-  ${media.mobile`width: 100%;`}
+  ${media.mobile`width: ${(props) => `calc(100% - ${props.scrollWidth}px)`};
+    padding-left: 0.5rem; `}
 `
 
 const ControlItem = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 0;
 
   &:first-child {
   }
 
   &:nth-child(2) {
     justify-content: center;
+    min-width: 0;
   }
 
   &:nth-child(3) {
@@ -83,6 +82,12 @@ const SvgContainer = styled.div`
   height: 40px;
   margin: ${(props) => (props.margin ? props.margin : '0 0.5rem 0 0')};
   fill: var(--theme-color);
+
+  ${media.mobile`
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  `}
 `
 
 const SvgStyle = {
@@ -115,8 +120,7 @@ const HoverTimeInfo = styled.div`
 const VideoInfoContainer = styled.div`
   display: flex;
   align-items: center;
-  flex-grow: 1;
-  flex-shrink: 1;
+  min-width: 0;
 `
 
 const ChannelTitle = styled.span``

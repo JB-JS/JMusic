@@ -172,7 +172,6 @@ const MusicData = styled.td`
   height: 54px;
 
   & > div:nth-child(2) {
-    flex-shrink: 1;
     min-width: 0;
   }
 `

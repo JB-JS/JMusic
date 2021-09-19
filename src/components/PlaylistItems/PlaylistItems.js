@@ -57,7 +57,10 @@ const PlaylistItems = ({ title, items, setToggleSidebar }) => {
         {items &&
           items.length > 0 &&
           items.map((item) => (
-            <Item key={item.id} onClick={setToggleSidebar}>
+            <Item
+              key={item.id}
+              {...(setToggleSidebar ? { onClick: setToggleSidebar } : {})}
+            >
               <SLink to={`/playlist/${item.id}`}>
                 <PlaylistTitle>{item.snippet.title}</PlaylistTitle>
               </SLink>

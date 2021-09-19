@@ -56,10 +56,6 @@ const App = () => {
 
   useEffect(() => {
     window.addEventListener('resize', () => {
-      console.log(
-        'resizing',
-        pageRef.current.offsetWidth - pageRef.current.scrollWidth
-      )
       setScrollWidth(pageRef.current.offsetWidth - pageRef.current.scrollWidth)
     })
   }, [])
