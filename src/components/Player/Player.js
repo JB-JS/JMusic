@@ -293,8 +293,6 @@ const Player = ({
         })
       )
 
-      target.unMute()
-
       volumeStorage.get() && target.setVolume(volumeStorage.get())
 
       window.addEventListener('keydown', (e) => {
