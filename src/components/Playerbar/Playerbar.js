@@ -135,9 +135,13 @@ const VideoThumbnail = styled.div`
 
 const Thumbnail = styled.img`
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
   border-radius: 2px;
+
+  &[src*='http'] {
+    height: 100%;
+  }
 `
 
 const VideoInfo = styled.div`

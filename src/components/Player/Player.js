@@ -390,7 +390,7 @@ const Player = ({
   )
 
   useEffect(() => {
-    if (iframe) {
+    if (iframe && isShuffle) {
       iframe.setShuffle(isShuffle)
     }
   }, [iframe, isShuffle])
