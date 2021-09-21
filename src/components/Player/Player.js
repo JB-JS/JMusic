@@ -121,10 +121,12 @@ const Player = ({
 
     iframe.unMute()
     iframe.setVolume(volume)
-    dispatch({
-      type: 'CHANGE_VIDEO',
-      payload: { isMuted: false, sound: { volume } },
-    })
+    dispatch(
+      changeVideo({
+        isMuted: false,
+        sound: { volume },
+      })
+    )
   }, [iframe, dispatch])
 
   const onPause = useCallback(() => {

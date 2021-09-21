@@ -347,7 +347,9 @@ const Playerbar = ({
                 <Info>
                   <ChannelTitle>{channelTitle}</ChannelTitle>
                   <span> • </span>
-                  <Year>{new Date(publishedAt).getFullYear()}</Year>
+                  <Year>
+                    {publishedAt && new Date(publishedAt).getFullYear()}
+                  </Year>
                 </Info>
               </VideoInfo>
             </VideoInfoContainer>
