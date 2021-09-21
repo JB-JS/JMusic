@@ -79,9 +79,9 @@ const YtVideo = ({
         onError={onError}
         opts={{
           playerVars: {
-            origin: 'https://www.youtube.com',
             controls: 0,
             autoplay: 1,
+            playsinline: 1,
             loop,
             ...(!loop && type === 'playlist'
               ? {
