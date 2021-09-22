@@ -226,9 +226,6 @@ const Player = ({
 
       setIframe(target)
 
-      target.playVideo()
-      target.unMute()
-
       dispatch(
         changeVideo({
           loading: false,
