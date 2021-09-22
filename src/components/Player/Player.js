@@ -286,6 +286,8 @@ const Player = ({
 
       setIframe(target)
 
+      target.playVideo()
+
       dispatch(
         changeVideo({
           loading: false,
