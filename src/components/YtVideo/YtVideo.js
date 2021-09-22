@@ -79,9 +79,9 @@ const YtVideo = ({
         onError={onError}
         opts={{
           playerVars: {
-            controls: 1,
+            controls: 0,
             autoplay: 1,
-            playsinline: 1,
+            playsinline: 0,
             mute: 1,
             loop,
             ...(!loop && type === 'playlist'
