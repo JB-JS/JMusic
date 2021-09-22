@@ -8,66 +8,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { changeHover, changeVideo } from '../../features/player/playerSlice'
 import { useState } from 'react'
 
-const initialState = {
-  video: {
-    show: false,
-    title: '',
-    publishedAt: null,
-    thumbnail: null,
-    channelTitle: null,
-    iframe: null,
-    loading: true,
-    playerState: null,
-    start: '0:00',
-    end: '0:00',
-    progress: 0,
-    sound: {
-      volume: null,
-      isVolumeDragging: false,
-    },
-    isPaused: null,
-    isMuted: null,
-    isVideoDragging: false,
-    isShuffle: false,
-    isLoop: false,
-  },
-  hover: {
-    isHover: false,
-    hoverLeft: 0,
-    hoverTime: 0,
-  },
-}
-
-function reducer(state, action) {
-  switch (action.type) {
-    case 'CHANGE_VIDEO':
-      return {
-        ...state,
-        video: {
-          ...state.video,
-          ...action.payload,
-          sound: {
-            ...state.video.sound,
-            ...action.payload.sound,
-          },
-        },
-        ...(action.progressTimer
-          ? { progressTimer: action.progressTimer }
-          : {}),
-      }
-    case 'CHANGE_HOVER':
-      return {
-        ...state,
-        hover: {
-          ...state.hover,
-          ...action.payload,
-        },
-      }
-    default:
-      throw new Error(`Undefined action type: ${action.type}`)
-  }
-}
-
 const Player = ({
   videoId,
   type,
@@ -286,12 +226,14 @@ const Player = ({
 
       setIframe(target)
 
+      target.playVideo()
+
       dispatch(
         changeVideo({
           loading: false,
           end: hms,
           sound: { volume: volumeStorage.get() || target.getVolume() },
-          isMuted: false,
+          isMuted: target.isMuted(),
         })
       )
 

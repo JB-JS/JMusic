@@ -26,7 +26,6 @@ const Video = styled.div`
   transition: transform 0.3s;
   z-index: 10;
   & > div:first-child {
-    flex: 1;
     height: 100%;
     margin-bottom: 2.5rem;
     > iframe {
@@ -81,8 +80,6 @@ const YtVideo = ({
           playerVars: {
             controls: 0,
             autoplay: 1,
-            playsinline: 0,
-            mute: 1,
             loop,
             ...(!loop && type === 'playlist'
               ? {
