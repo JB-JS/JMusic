@@ -80,6 +80,7 @@ const YtVideo = ({
           playerVars: {
             controls: 0,
             autoplay: 1,
+            playsinline: 1,
             loop,
             ...(!loop && type === 'playlist'
               ? {
