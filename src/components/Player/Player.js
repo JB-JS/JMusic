@@ -225,7 +225,6 @@ const Player = ({
       const hms = toHMS(target.getDuration())
 
       setIframe(target)
-      target.unMute()
 
       dispatch(
         changeVideo({
