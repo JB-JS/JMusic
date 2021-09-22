@@ -227,13 +227,14 @@ const Player = ({
       setIframe(target)
 
       target.playVideo()
+      target.unMute()
 
       dispatch(
         changeVideo({
           loading: false,
           end: hms,
           sound: { volume: volumeStorage.get() || target.getVolume() },
-          isMuted: target.isMuted(),
+          isMuted: false,
         })
       )
 
