@@ -79,7 +79,7 @@ const YtVideo = ({
         onError={onError}
         opts={{
           playerVars: {
-            controls: 0,
+            controls: 1,
             autoplay: 1,
             playsinline: 1,
             mute: 1,
