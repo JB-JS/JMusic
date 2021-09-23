@@ -23,6 +23,15 @@ export const playlistsSlice = createSlice({
         playlists: state.playlists.concat(action.payload),
       }
     },
+    remove(state, action) {
+      return {
+        ...state,
+        playlists: state.playlists.filter(
+          (playlist) => playlist.id !== action.payload.id
+        ),
+      }
+    },
+
     update(state, action) {
       return {
         ...state,
@@ -36,7 +45,7 @@ export const playlistsSlice = createSlice({
   },
 })
 
-export const { loading, success, error, update, insert } =
+export const { loading, success, error, update, insert, remove } =
   playlistsSlice.actions
 
 export default playlistsSlice.reducer

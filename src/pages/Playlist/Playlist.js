@@ -9,8 +9,9 @@ import { media } from '../../lib/utils/index'
 import Modal from '../../components/Modal/Modal'
 import Skeleton from '@material-ui/lab/Skeleton'
 import { useRef } from 'react'
-import { update } from '../../features/playlists/playlistsSlice'
+import { remove, update } from '../../features/playlists/playlistsSlice'
 import ContextMenu from '../../components/ContextMenu'
+import useContextMenu from '../../hooks/useContextMenu'
 
 const Thumbnail = styled.img`
   width: 40px;
@@ -47,6 +48,7 @@ const HeadThumbnail = styled.img`
 `
 
 const HeadContent = styled.div`
+  max-width: 400px;
   margin-top: 50px;
   margin-left: 2.125rem;
   flex: 1;
@@ -77,10 +79,11 @@ const PlayBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 90px;
+  width: 100%;
   height: 40px;
   border-radius: 4px;
   background: var(--red);
+
   color: #fff;
   cursor: pointer;
 `
@@ -190,7 +193,7 @@ const ItemTitle = styled.h2`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--system-primary);
   padding-right: 10px;
 `
 
@@ -208,16 +211,15 @@ const EditBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   height: 100%;
-  width: 167px;
   height: 40px;
-  border: 1px solid #fff;
+  border: 1px solid var(--system-primary);
   border-radius: 2px;
-  margin-left: 20px;
   background: none;
   cursor: pointer;
   transition: color 0.5s, background 1s;
-  color: #fff;
+  color: var(--system-primary);
   &:hover {
     background: #fff;
     color: #000;
@@ -227,6 +229,29 @@ const EditBtn = styled.button`
 const ButtonBlock = styled.div`
   display: flex;
   margin-top: 20px;
+  gap: 0 20px;
+  font-size: 14px;
+  & > div {
+    flex: 1;
+  }
+`
+
+const RemoveBtn = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  background: none;
+  border: 1px solid var(--system-primary);
+  border-radius: 2px;
+  transition: color 0.5s, background 1s;
+  cursor: pointer;
+
+  &:hover {
+    background: #fff;
+    color: #000;
+  }
 `
 
 const Title = styled.h2`
@@ -408,7 +433,7 @@ const HeadDescription = styled.p`
 
 const HideList = styled.ul`
   position: absolute;
-  bottom: 0;
+  top: 0;
   right: -2px;
   display: none;
   max-width: 385px;
@@ -425,7 +450,7 @@ const HideList = styled.ul`
   backdrop-filter: blur(70px) saturate(210%);
   z-index: 9992;
   transform: ${(props) =>
-    props.over ? 'translateX(-100%)' : 'translate(100%)'};
+    props.overX ? 'translateX(-100%)' : 'translate(100%)'};
 
   & > li {
     display: flex;
@@ -558,31 +583,37 @@ function reducer(state, action) {
   }
 }
 
-const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
+const Playlist = ({ match, history, setVideo, setPlaylistItemsId }) => {
   const playlistId = match.params.playlistId
 
+  const titleInputRef = useRef(null)
+  const menuRef = React.createRef()
+
+  const {
+    contextMenu,
+    onShow,
+    onClose,
+    over: { overX },
+  } = useContextMenu(menuRef, playlistId)
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isOpen, setIsOpen] = useState(false)
-  const [contextMenu, setContextMenu] = useState({
-    show: false,
-    itemId: null,
-    resourceId: null,
-  })
-  const [location, setLocation] = useState({
-    x: 0,
-    y: 0,
-  })
-  const [over, setOver] = useState({
-    overX: false,
-  })
+  // const [contextMenu, setContextMenu] = useState({
+  //   show: false,
+  //   itemId: null,
+  //   resourceId: null,
+  // })
+  // const [location, setLocation] = useState({
+  //   x: 0,
+  //   y: 0,
+  // })
+  // const [over, setOver] = useState({
+  //   overX: false,
+  // })
   const [inputs, setInputs] = useState({
     title: '',
     description: '',
     isFocus: { title: false, description: false },
   })
-
-  const titleInputRef = useRef(null)
-  const menuRef = React.createRef()
 
   const {
     playlists: { playlists },
@@ -726,37 +757,6 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     setIsOpen(false)
   }, [])
 
-  const onRemovePlaylistItem = useCallback(() => {
-    const id = contextMenu.itemId
-
-    console.log(contextMenu.itemId)
-
-    ytApi.removePlaylistItems(id, access_token)
-
-    dispatch({
-      type: 'REMOVE_PLAYLISTITEM',
-      payload: {
-        id,
-      },
-    })
-
-    setContextMenu((prevState) => ({ ...prevState, show: false }))
-  }, [access_token, contextMenu.itemId])
-
-  const onOpenContextMenu = useCallback((e, resourceId) => {
-    const rect = e.target.getBoundingClientRect()
-    console.log(rect)
-
-    setLocation({ x: rect.x, y: rect.y + rect.height })
-
-    setContextMenu((prevState) => ({
-      ...prevState,
-      show: true,
-      itemId: e.target.dataset.id,
-      resourceId,
-    }))
-  }, [])
-
   const onAddPlaylistData = useCallback(
     async (insertPlaylistId) => {
       const { data } = await ytApi.insertPlaylistData(
@@ -798,6 +798,43 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     [contextMenu.resourceId, access_token, playlistId]
   )
 
+  const onRemovePlaylistItem = useCallback(() => {
+    const id = contextMenu.itemId
+
+    ytApi.removePlaylistItems(id, access_token)
+
+    dispatch({
+      type: 'REMOVE_PLAYLISTITEM',
+      payload: {
+        id,
+      },
+    })
+
+    onClose()
+  }, [access_token, contextMenu.itemId, onClose])
+
+  // const onOpenContextMenu = useCallback((e, resourceId) => {
+  //   const rect = e.target.getBoundingClientRect()
+  //   console.log(rect)
+
+  //   setLocation({ x: rect.x, y: rect.y + rect.height })
+
+  //   setContextMenu((prevState) => ({
+  //     ...prevState,
+  //     show: true,
+  //     itemId: e.target.dataset.id,
+  //     resourceId,
+  //   }))
+  // }, [])
+
+  const onRemovePlaylist = useCallback(async () => {
+    const { data } = await ytApi.removePlaylist(playlistId, access_token)
+
+    reduxDispatch(remove({ id: playlistId }))
+
+    history.push('/')
+  }, [playlistId, access_token, reduxDispatch, history])
+
   const onUpdate = useCallback(async () => {
     const { data } = await ytApi.updatePlaylist(playlistId, access_token, {
       title,
@@ -817,11 +854,11 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
     fetchData()
   }, [fetchData])
 
-  useEffect(() => {
-    menuRef.current &&
-      menuRef.current.offsetWidth + location.x > window.innerWidth &&
-      setOver({ overX: true, overY: false })
-  }, [location.x])
+  // useEffect(() => {
+  //   menuRef.current &&
+  //     menuRef.current.offsetWidth + location.x > window.innerWidth &&
+  //     setOver({ overX: true, overY: false })
+  // }, [location.x])
 
   useEffect(() => {
     if (datas && datas.listData.items.length > 0) {
@@ -903,35 +940,30 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             <ButtonBlock>
               <div style={{ marginTop: 'auto' }}>
                 {datas ? (
-                  datas.itemData.items.length > 0 ? (
-                    <PlayBtn
-                      onClick={onClick}
-                      data-videoid={
-                        datas.itemData.items[0].snippet.resourceId.videoId
-                      }
-                      data-playlistid={playlistId}
+                  <RemoveBtn onClick={onRemovePlaylist}>
+                    <svg
+                      viewBox="0 0 24 24"
+                      preserveAspectRatio="xMidYMid meet"
+                      focusable="false"
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        marginRight: '8px',
+                      }}
+                      fill="currentColor"
                     >
-                      <Icon
-                        name="play"
-                        style={{
-                          fill: '#fff',
-                          width: '24px',
-                          height: '24px',
-                          marginRight: '0.25rem',
-                        }}
-                      />
-                      재생
-                    </PlayBtn>
-                  ) : (
-                    ''
-                  )
+                      <g>
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+                      </g>
+                    </svg>
+                    재생목록 삭제
+                  </RemoveBtn>
                 ) : (
                   <Skeleton
-                    width={90}
-                    height={40}
                     variant="rect"
-                    style={{ borderRadius: '4px' }}
-                  ></Skeleton>
+                    height={40}
+                    style={{ marginLeft: '20px', borderRadius: '4px' }}
+                  />
                 )}
               </div>
               <div>
@@ -950,13 +982,44 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                 ) : (
                   <Skeleton
                     variant="rect"
-                    width={167}
                     height={40}
                     style={{ marginLeft: '20px', borderRadius: '4px' }}
                   />
                 )}
               </div>
             </ButtonBlock>
+            <div style={{ marginTop: '2rem' }}>
+              {datas ? (
+                datas.itemData.items.length > 0 ? (
+                  <PlayBtn
+                    onClick={onClick}
+                    data-videoid={
+                      datas.itemData.items[0].snippet.resourceId.videoId
+                    }
+                    data-playlistid={playlistId}
+                  >
+                    <Icon
+                      name="play"
+                      style={{
+                        fill: '#fff',
+                        width: '24px',
+                        height: '24px',
+                        marginRight: '0.25rem',
+                      }}
+                    />
+                    재생
+                  </PlayBtn>
+                ) : (
+                  ''
+                )
+              ) : (
+                <Skeleton
+                  height={40}
+                  variant="rect"
+                  style={{ borderRadius: '4px' }}
+                ></Skeleton>
+              )}
+            </div>
           </HeadContent>
         </ItemHead>
 
@@ -1021,9 +1084,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                             cursor: 'pointer',
                           }}
                           data-id={item.id}
-                          onClick={(e) =>
-                            onOpenContextMenu(e, item.snippet.resourceId)
-                          }
+                          onClick={(e) => onShow(e, item.snippet.resourceId)}
                         />
                       }
                     </div>
@@ -1125,22 +1186,17 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
       )}
       {contextMenu.show && (
         <ContextMenu
-          location={location}
-          over={over}
+          x={contextMenu.x}
+          y={contextMenu.y}
+          overX={overX}
           ref={menuRef}
-          setIsContextMenu={setContextMenu}
+          onClose={onClose}
           contextMenu={contextMenu}
         >
           <ContextList>
             <ContextItem onClick={onRemovePlaylistItem}>
               <div>
-                <span
-                  onClick={() =>
-                    setContextMenu({ ...contextMenu, show: false })
-                  }
-                >
-                  재생목록에서 삭제
-                </span>
+                <span>재생목록에서 삭제</span>
                 <Icon
                   name="playlistRemove"
                   width="18"
@@ -1157,13 +1213,7 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
             </ContextItem>
             <ContextItem>
               <div>
-                <DropDown
-                  onClick={() =>
-                    setContextMenu({ ...contextMenu, show: false })
-                  }
-                >
-                  재생목록에 추가
-                </DropDown>
+                <DropDown>재생목록에 추가</DropDown>
                 <Icon
                   name="playlistAdd"
                   width="18"
@@ -1177,14 +1227,14 @@ const Playlist = ({ match, setVideo, setPlaylistItemsId }) => {
                   }}
                 />
               </div>
-              <HideList over={over.overX}>
+              <HideList overX={overX}>
                 {playlists.length > 0 &&
                   playlists.map((playlist) => (
                     <li
                       key={playlist.id}
                       onClick={() => {
                         onAddPlaylistData(playlist.id)
-                        setContextMenu({ ...contextMenu, show: false })
+                        onClose()
                       }}
                     >
                       <PlaylistIcon />

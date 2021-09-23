@@ -30,24 +30,13 @@ const OutsideArea = styled.div`
 `
 
 const Contextmenu = React.forwardRef(
-  (
-    {
-      children,
-      location: { x, y },
-      over: { overX },
-      contextMenu,
-      setIsContextMenu,
-    },
-    ref
-  ) => {
+  ({ children, x, y, overX, onClose }, ref) => {
     return (
       <>
         <Container top={y} left={x} ref={ref} overX={overX}>
           {children}
         </Container>
-        <OutsideArea
-          onClick={() => setIsContextMenu({ ...contextMenu, show: false })}
-        />
+        <OutsideArea onClick={onClose} />
       </>
     )
   }

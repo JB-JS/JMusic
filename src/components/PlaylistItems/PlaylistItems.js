@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 
@@ -48,12 +48,36 @@ const Item = styled.li`
   border-radius: 6px;
   background-color: ${({ current }) => current && 'var(--sidebar-selected-bg)'};
 `
+const AddPlaylistItem = styled.li`
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 0.25rem;
+  cursor: pointer;
+  & > svg {
+    fill: #fff;
+    margin-right: 0.5rem;
+  }
+`
 
-const PlaylistItems = ({ title, items, setToggleSidebar }) => {
+const PlaylistItems = ({ title, items, setToggleSidebar, setIsOpen }) => {
   return (
     <>
       {title && <Title>{title}</Title>}
       <List>
+        <AddPlaylistItem onClick={() => setIsOpen(true)}>
+          <svg
+            viewBox="0 0 24 24"
+            preserveAspectRatio="xMidYMid meet"
+            focusable="false"
+            style={{ width: '24px', height: '24px' }}
+          >
+            <g>
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+            </g>
+          </svg>
+          새 재생목록
+        </AddPlaylistItem>
         {items &&
           items.length > 0 &&
           items.map((item) => (

@@ -79,6 +79,31 @@ export const ytApi = {
     })
   },
 
+  addPlaylist(datas, access_token) {
+    return axios({
+      method: 'post',
+      url: 'https://www.googleapis.com/youtube/v3/playlists',
+      params: {
+        part: 'snippet',
+        access_token,
+      },
+      data: {
+        snippet: {
+          ...datas,
+        },
+      },
+    })
+  },
+
+  removePlaylist(id, access_token) {
+    return authApi.delete('playlists', {
+      params: {
+        id,
+        access_token,
+      },
+    })
+  },
+
   removePlaylistItems(id, access_token) {
     return axios.delete('https://www.googleapis.com/youtube/v3/playlistItems', {
       params: {
