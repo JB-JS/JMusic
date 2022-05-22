@@ -1,31 +1,31 @@
-import React from 'react'
-import { useState } from 'react'
-import { useStore } from 'react-redux'
-import styled from 'styled-components'
-import SigninBtn from '../SigninBtn'
+import React from 'react';
+import { useState } from 'react';
+import { useStore } from 'react-redux';
+import styled from 'styled-components';
+import SigninBtn from '../SigninBtn';
 
 const Container = styled.div`
   margin-top: 76px;
   text-align: center;
-`
+`;
 
 const IconContainer = styled.div`
   margin-bottom: 0.875rem;
   svg {
     fill: var(--system-primary);
   }
-`
+`;
 
 const Title = styled.div`
   font-size: 48px;
   margin-bottom: 1rem;
   font-weight: bold;
-`
+`;
 
 const SubTitle = styled.div`
   max-width: 380px;
   margin: 0 auto 1.875rem;
-`
+`;
 
 const ImgContainer = styled.div`
   img {
@@ -33,7 +33,7 @@ const ImgContainer = styled.div`
     max-width: 1680px;
     object-fit: cover;
   }
-`
+`;
 
 const NoLogin = ({ setAuth, onSuccess }) => {
   return (
@@ -56,11 +56,9 @@ const NoLogin = ({ setAuth, onSuccess }) => {
         </svg>
       </IconContainer>
       <Title>매일 새로운 음악을 발견해 보세요.</Title>
-      <SubTitle>
-        플레이리스트 및 인기 아티스트들의 음악을 탐색하거나 검색할수 있습니다.
-      </SubTitle>
+      <SubTitle>플레이리스트 및 인기 아티스트들의 음악을 탐색하거나 검색할수 있습니다.</SubTitle>
 
-      <SigninBtn width="210px" onSuccess={onSuccess} setAuth={setAuth} />
+      <SigninBtn width="210px" />
 
       <ImgContainer>
         <img
@@ -69,7 +67,7 @@ const NoLogin = ({ setAuth, onSuccess }) => {
         />
       </ImgContainer>
     </Container>
-  )
-}
+  );
+};
 
-export default NoLogin
+export default NoLogin;

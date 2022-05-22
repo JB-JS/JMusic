@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
-import styled from 'styled-components'
-import { signin } from '../../features/user/userSlice'
-import Icon from '../Icon'
+import React, { useCallback, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { signin } from '../../features/user/userSlice';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import Icon from '../Icon';
+import { auth } from '../../firebaseInit';
 
 const Signin = styled.div`
   display: inline-flex;
@@ -17,54 +19,55 @@ const Signin = styled.div`
   > svg {
     margin-right: 0.625rem;
   }
-`
+`;
 
 const SigninBtn = ({ width = '100%' }) => {
-  const buttonRef = useRef(null)
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+  const signInWithGoogle = useCallback(() => {
+    const provider = new GoogleAuthProvider();
 
-  useEffect(() => {
-    window.gapi.load('auth2', function () {
-      const googleAuth = window.gapi.auth2.init({
-        client_id:
-          '612653883280-agd5lm8n0qum7eh5fj27cmvt0hhkq2hq.apps.googleusercontent.com',
+    provider.addScope('https://www.googleapis.com/auth/youtube.force-ssl');
+
+    signInWithPopup(auth, provider)
+      .then(result => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+
+        console.log(token, result);
+
+        // The signed-in user info.
+        const { displayName, photoURL } = result.user;
+        // ...
+
+        dispatch(
+          signin({
+            displayName,
+            photoURL,
+            access_token: token,
+            isLoggedIn: true,
+          }),
+        );
       })
-
-      googleAuth.attachClickHandler(
-        buttonRef.current,
-        {
-          scope: 'https://www.googleapis.com/auth/youtube',
-        },
-        (e) => {
-          const basicProfile = e.getBasicProfile()
-          const displayName = basicProfile.getName()
-          const photoURL = basicProfile.getImageUrl()
-          const isLoggedIn = e.isSignedIn()
-          const access_token = e.getAuthResponse().access_token
-
-          window.auth = googleAuth
-          window.googleUser = e
-
-          dispatch(
-            signin({
-              displayName,
-              photoURL,
-              isLoggedIn,
-              access_token,
-            })
-          )
-        }
-      )
-    })
-  }, [dispatch])
+      .catch(error => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
+  }, [dispatch]);
 
   return (
-    <Signin ref={buttonRef} width={width}>
+    <Signin width={width} onClick={signInWithGoogle}>
       <Icon name="google" />
       <span>Sign in With Google</span>
     </Signin>
-  )
-}
+  );
+};
 
-export default SigninBtn
+export default SigninBtn;

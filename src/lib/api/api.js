@@ -1,19 +1,19 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://www.googleapis.com/youtube/v3',
   params: {
     part: 'snippet',
-    key: 'AIzaSyCQL8XdBZGn_3kR51MTU3Sz5CF5O9bs0KQ',
+    key: 'AIzaSyCe2ftvQaIfE0S_dlpoDnejQ3QSD5qGIlQ',
   },
-})
+});
 
 const authApi = axios.create({
   baseURL: 'https://www.googleapis.com/youtube/v3',
   params: {
     part: 'snippet',
   },
-})
+});
 
 export const ytApi = {
   getVideoTime(id, access_token) {
@@ -24,7 +24,7 @@ export const ytApi = {
         id,
         access_token,
       },
-    })
+    });
   },
 
   insertPlaylistData({ playlistId, resourceId }, access_token) {
@@ -42,9 +42,9 @@ export const ytApi = {
             resourceId,
           },
         },
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   },
 
@@ -63,9 +63,9 @@ export const ytApi = {
             ...datas,
           },
         },
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   },
 
@@ -76,7 +76,7 @@ export const ytApi = {
         max_results: 50,
         access_token,
       },
-    })
+    });
   },
 
   addPlaylist(datas, access_token) {
@@ -92,7 +92,7 @@ export const ytApi = {
           ...datas,
         },
       },
-    })
+    });
   },
 
   removePlaylist(id, access_token) {
@@ -101,7 +101,7 @@ export const ytApi = {
         id,
         access_token,
       },
-    })
+    });
   },
 
   removePlaylistItems(id, access_token) {
@@ -110,7 +110,7 @@ export const ytApi = {
         id,
         access_token,
       },
-    })
+    });
   },
 
   getPlaylistsById(id, access_token) {
@@ -119,7 +119,7 @@ export const ytApi = {
         id,
         access_token,
       },
-    })
+    });
   },
 
   getPlaylists(access_token) {
@@ -127,9 +127,11 @@ export const ytApi = {
       params: {
         mine: true,
         max_results: 50,
-        access_token,
       },
-    })
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
   },
 
   getVideo(id) {
@@ -137,7 +139,7 @@ export const ytApi = {
       params: {
         id,
       },
-    })
+    });
   },
 
   getPopular() {
@@ -148,7 +150,7 @@ export const ytApi = {
         videoCategoryId: '10',
         maxResults: 20,
       },
-    })
+    });
   },
 
   search(q, access_token) {
@@ -161,6 +163,6 @@ export const ytApi = {
         videoCategoryId: 10,
         access_token,
       },
-    })
+    });
   },
-}
+};

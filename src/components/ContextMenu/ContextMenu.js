@@ -29,17 +29,15 @@ const OutsideArea = styled.div`
   cursor: pointer;
 `
 
-const Contextmenu = React.forwardRef(
-  ({ children, x, y, overX, onClose }, ref) => {
-    return (
-      <>
-        <Container top={y} left={x} ref={ref} overX={overX}>
-          {children}
-        </Container>
-        <OutsideArea onClick={onClose} />
-      </>
-    )
-  }
-)
+const Contextmenu = ({ children, x, y, overX, onClose, measuredRef }) => {
+  return (
+    <>
+      <Container top={y} left={x} ref={measuredRef} overX={overX}>
+        {children}
+      </Container>
+      <OutsideArea onClick={onClose} />
+    </>
+  )
+}
 
 export default Contextmenu

@@ -1,22 +1,18 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import styled, { css } from 'styled-components'
-import { NavLink } from 'react-router-dom'
-import SearchForm from '../SearchForm'
-import Icon from '../Icon'
-import SigninBtn from '../SigninBtn'
-import { ytApi } from '../../lib/api/api'
-import PlaylistItems from '../PlaylistItems'
-import { signOut } from '../../features/user/userSlice'
-import { useDispatch } from 'react-redux'
-import {
-  insert,
-  loading,
-  success,
-} from '../../features/playlists/playlistsSlice'
-import Avatar from '../Avatar'
-import { media } from '../../lib/utils/index'
-import Modal from '../Modal/Modal'
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import styled, { css } from 'styled-components';
+import { NavLink } from 'react-router-dom';
+import SearchForm from '../SearchForm';
+import Icon from '../Icon';
+import SigninBtn from '../SigninBtn';
+import { ytApi } from '../../lib/api/api';
+import PlaylistItems from '../PlaylistItems';
+import { signOut } from '../../features/user/userSlice';
+import { useDispatch } from 'react-redux';
+import { insert, loading, success } from '../../features/playlists/playlistsSlice';
+import Avatar from '../Avatar';
+import { media } from '../../lib/utils/index';
+import Modal from '../Modal/Modal';
 
 const Aside = styled.aside`
   display: grid;
@@ -32,7 +28,7 @@ const Aside = styled.aside`
     width: 100%;
     overflow: hidden;
     max-height: -webkit-fill-avilable;
-    height: ${(props) =>
+    height: ${props =>
       props.toggleSidebar
         ? !props.isLoading
           ? 'calc(100vh - 44px - var(--player-bar-height))'
@@ -46,7 +42,7 @@ const Aside = styled.aside`
       display: none;
     } 
   `}
-`
+`;
 
 const Logo = styled.div`
   font-size: 2.5rem;
@@ -55,13 +51,13 @@ const Logo = styled.div`
   svg {
     fill: var(--system-primary);
   }
-`
+`;
 
 const Nav = styled.nav`
   padding: 0 1.5625rem;
   margin: 1rem 0;
   overflow: auto;
-`
+`;
 
 const Profile = styled.div`
   display: flex;
@@ -70,17 +66,17 @@ const Profile = styled.div`
   padding: 0 1.5625rem;
   border-top: 0.5px solid var(--divider);
   background: var(--sidebar-bg);
-`
+`;
 
 const UserName = styled.div`
   font-size: 0.8125rem;
-`
+`;
 
 const LogOut = styled.a`
   font-size: 0.8125rem;
   color: var(--red);
   cursor: pointer;
-`
+`;
 
 const Menu = styled(NavLink)`
   display: flex;
@@ -91,36 +87,36 @@ const Menu = styled(NavLink)`
   &.active {
     background: var(--sidebar-selected-bg);
   }
-`
+`;
 
 const ModalHead = styled.div`
   padding: 24px 24px 0;
-`
+`;
 
 const TitleInput = styled.input`
   width: 100%;
   line-height: 22.4px;
   font-size: 14px;
   background: none;
-  ${(props) =>
+  ${props =>
     props.isFocused &&
     css`
       caret-color: rgb(62, 166, 255);
     `}
-`
+`;
 
 const ModalContent = styled.div`
   padding: 32px 24px;
-`
+`;
 
 const ModalTitle = styled.h2`
   font-size: 20px;
-`
+`;
 
 const Void = styled.div`
   visibility: hidden;
-  line-height: ${(props) => props.lh || '20px'};
-`
+  line-height: ${props => props.lh || '20px'};
+`;
 
 const Underline = styled.div`
   position: relative;
@@ -133,21 +129,21 @@ const Underline = styled.div`
     background: rgb(62, 166, 255);
     transform-origin: center;
     transform: scale(0);
-    ${(props) =>
+    ${props =>
       props.isFocused &&
       css`
         transform: none;
         transition: transform 0.5s;
       `}
   }
-`
+`;
 
 const InputBlock = styled.div`
   position: relative;
   margin-bottom: 2px;
   background: none;
   width: 100%;
-`
+`;
 
 const Label = styled.label`
   position: absolute;
@@ -159,20 +155,20 @@ const Label = styled.label`
   transition: 0.25s;
   transform-origin: left top;
 
-  ${(props) =>
+  ${props =>
     props.isValue &&
     props.isFocused &&
     css`
       color: rgb(62, 166, 255);
     `}
 
-  ${(props) =>
+  ${props =>
     props.isValue &&
     css`
       transform: translateY(-75%) scale(0.75);
       padding-bottom: 8px;
     `}
-`
+`;
 
 const Description = styled.div`
   margin: 32px 0 40px;
@@ -180,17 +176,17 @@ const Description = styled.div`
   ${InputBlock} {
     line-height: 1.6;
   }
-`
+`;
 
 const DescriptionTextarea = styled.textarea`
   width: 100%;
-  caret-color: ${(props) => props.isFocused && 'rgb(62, 166, 255)'};
+  caret-color: ${props => props.isFocused && 'rgb(62, 166, 255)'};
   resize: none;
   background: none;
   border: none;
   outline: none;
   font-size: 14px;
-`
+`;
 
 const TextareaBlock = styled.div`
   position: relative;
@@ -199,7 +195,7 @@ const TextareaBlock = styled.div`
 
   ${Void} {
     white-space: pre-wrap;
-    ${(props) =>
+    ${props =>
       props.isFocused &&
       css`
         caret-color: rgb(62, 166, 255);
@@ -218,7 +214,7 @@ const TextareaBlock = styled.div`
       height: 100%;
     }
   }
-`
+`;
 
 const ActionBtn = styled.div`
   display: flex;
@@ -240,36 +236,34 @@ const ActionBtn = styled.div`
       color: #000;
     }
   }
-`
+`;
 
 const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
-  const { displayName, photoURL, isLoggedIn, access_token } = useSelector(
-    (state) => state.user
-  )
+  const { displayName, photoURL, isLoggedIn, access_token } = useSelector(state => state.user);
 
   const {
     playlists: { playlists },
     player: {
       video: { loading: isLoading },
     },
-  } = useSelector((state) => state)
+  } = useSelector(state => state);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   const [inputs, setInputs] = useState({
     title: '',
     description: '',
     isFocus: { title: false, description: false },
-  })
+  });
 
-  const { title, description, isFocus } = inputs
+  const { title, description, isFocus } = inputs;
 
-  const titleInputRef = useRef(null)
+  const titleInputRef = useRef(null);
 
   const onClick = () => {
-    dispatch(signOut())
-  }
+    dispatch(signOut());
+  };
 
   const onAddPlaylist = useCallback(async () => {
     const { data } = await ytApi.addPlaylist(
@@ -277,77 +271,79 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
         title,
         description,
       },
-      access_token
-    )
+      access_token,
+    );
 
-    dispatch(insert(data))
+    dispatch(insert(data));
 
-    setIsOpen(false)
-  }, [title, description, access_token, dispatch])
+    setIsOpen(false);
+  }, [title, description, access_token, dispatch]);
 
-  const onChange = useCallback((e) => {
+  const onChange = useCallback(e => {
     const {
       target: { name, value },
-    } = e
+    } = e;
 
-    setInputs((prevState) => ({
+    setInputs(prevState => ({
       ...prevState,
       [name]: value,
-    }))
-  }, [])
+    }));
+  }, []);
 
-  const onBlur = useCallback((e) => {
+  const onBlur = useCallback(e => {
     const {
       target: { name },
-    } = e
+    } = e;
 
-    setInputs((prevState) => ({
+    setInputs(prevState => ({
       ...prevState,
       isFocus: {
         ...prevState.isFocus,
         [name]: false,
       },
-    }))
-  }, [])
+    }));
+  }, []);
 
-  const onFocus = useCallback((e) => {
+  const onFocus = useCallback(e => {
     const {
       target: { name },
-    } = e
+    } = e;
 
-    setInputs((prevState) => ({
+    setInputs(prevState => ({
       ...prevState,
       isFocus: {
         ...prevState.isFocus,
         [name]: true,
       },
-    }))
-  }, [])
+    }));
+  }, []);
 
   useEffect(() => {
-    isOpen && titleInputRef.current.focus()
-  }, [isOpen])
+    isOpen && titleInputRef.current.focus();
+  }, [isOpen]);
 
   useEffect(() => {
     const fetchPlaylists = async () => {
-      dispatch(loading())
+      dispatch(loading());
+
+      console.log(access_token);
 
       try {
         const {
           data: { items },
-        } = await ytApi.getPlaylists(access_token)
+        } = await ytApi.getPlaylists(access_token);
 
-        dispatch(success(items))
+        dispatch(success(items));
       } catch (err) {
-        console.log(err.response, window.googleUser)
+        console.log(err.response, window.googleUser);
         if (err.response.status === 401) {
           // window.googleUser.reloadAuthResponse()
         }
       }
-    }
+    };
 
-    isLoggedIn && fetchPlaylists()
-  }, [isLoggedIn, access_token, dispatch])
+    isLoggedIn && fetchPlaylists();
+  }, [isLoggedIn, access_token, dispatch]);
 
   return (
     <>
@@ -378,10 +374,7 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
           <ul>
             <li>
               <Menu to="/" exact>
-                <Icon
-                  name="viewRect"
-                  style={{ marginRight: '0.5rem', fill: 'var(--red)' }}
-                />
+                <Icon name="viewRect" style={{ marginRight: '0.5rem', fill: 'var(--red)' }} />
                 <span>둘러보기</span>
               </Menu>
             </li>
@@ -420,11 +413,7 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
             <div>
               <Void>&nbsp;</Void>
               <InputBlock>
-                <Label
-                  htmlFor="title"
-                  isValue={title !== ''}
-                  isFocused={isFocus.title}
-                >
+                <Label htmlFor="title" isValue={title !== ''} isFocused={isFocus.title}>
                   제목
                 </Label>
                 <TitleInput
@@ -432,8 +421,8 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
                   value={title}
                   id="title"
                   onChange={onChange}
-                  onKeyDown={(e) => {
-                    e.stopPropagation()
+                  onKeyDown={e => {
+                    e.stopPropagation();
                   }}
                   onBlur={onBlur}
                   onFocus={onFocus}
@@ -467,8 +456,8 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
                         autoComplete="off"
                         id="description"
                         onChange={onChange}
-                        onKeyDown={(e) => {
-                          e.stopPropagation()
+                        onKeyDown={e => {
+                          e.stopPropagation();
                         }}
                         onBlur={onBlur}
                         onFocus={onFocus}
@@ -497,7 +486,7 @@ const Sidebar = ({ toggleSidebar, setToggleSidebar }) => {
         </Modal>
       )}
     </>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

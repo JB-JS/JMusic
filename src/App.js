@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import styled from 'styled-components'
-import GlobalStyle from './components/GlobalStyle'
-import Sidebar from './components/Sidebar'
-import Home from './pages/Home'
-import Search from './pages/Search'
-import Playlist from './pages/Playlist'
-import Player from './components/Player'
-import NoLogin from './components/NoLogin'
-import { useSelector } from 'react-redux'
-import { media } from './lib/utils/index'
-import { useMediaQuery } from 'react-responsive'
-import Header from './components/Header'
+import { useEffect, useRef, useState } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import styled from 'styled-components';
+import GlobalStyle from './components/GlobalStyle';
+import Sidebar from './components/Sidebar';
+import Home from './pages/Home';
+import Search from './pages/Search';
+import Playlist from './pages/Playlist';
+import Player from './components/Player';
+import NoLogin from './components/NoLogin';
+import { useSelector } from 'react-redux';
+import { media } from './lib/utils/index';
+import { useMediaQuery } from 'react-responsive';
+import Header from './components/Header';
+import useAuth from './hooks/useAuth';
 
 const GridContainer = styled.div`
   display: grid;
@@ -22,107 +23,103 @@ const GridContainer = styled.div`
   ${media.mobile`
   grid-template-columns: 1fr;
   grid-template-rows: 1fr auto;`}
-`
+`;
 
 const Page = styled.div`
-  padding-bottom: ${(props) => props.played && 'var(--player-bar-height)'};
+  padding-bottom: ${props => props.played && 'var(--player-bar-height)'};
   overflow-y: scroll;
-`
+`;
 
 const App = () => {
-  const [playlistItemsId, setPlaylistItemsId] = useState([])
+  const [playlistItemsId, setPlaylistItemsId] = useState([]);
   const [video, setVideo] = useState({
     videoId: null,
     playlistId: null,
     isPlayed: false,
     type: 'video',
-  })
-  const [scrollWidth, setScrollWidth] = useState(0)
-  const { playlistId, videoId, isPlayed, type } = video
+  });
+  const [scrollWidth, setScrollWidth] = useState(0);
+  const { playlistId, videoId, isPlayed, type } = video;
 
-  const { isLoggedIn } = useSelector((state) => state.user)
+  const { isLoggedIn } = useSelector(state => state.user);
 
-  const isHeader = useMediaQuery({ query: '(max-width: 500px)' })
+  const isHeader = useMediaQuery({ query: '(max-width: 500px)' });
 
-  const pageRef = useRef(null)
+  const { loading } = useAuth();
 
-  const onClick = (e) => {
+  const pageRef = useRef(null);
+
+  const onClick = e => {
     setVideo({
       videoId: e.currentTarget.dataset.videoid,
       isPlayed: true,
       type: 'video',
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     window.addEventListener('resize', () => {
-      setScrollWidth(pageRef.current.offsetWidth - pageRef.current.scrollWidth)
-    })
-  }, [])
+      setScrollWidth(pageRef.current.offsetWidth - pageRef.current.scrollWidth);
+    });
+  }, []);
 
   return (
-    <>
-      <BrowserRouter>
-        <GlobalStyle />
-        <GridContainer>
-          {isHeader ? <Header /> : <Sidebar />}
-          <Page played={isPlayed} ref={pageRef}>
-            <Switch>
-              {!isLoggedIn && (
-                <Route
-                  path={['/', '/search', '/playlist/:playlistId']}
-                  render={() => <NoLogin />}
-                  exact
-                />
-              )}
+    <BrowserRouter>
+      <GlobalStyle />
+      <GridContainer>
+        {isHeader ? <Header /> : <Sidebar />}
+        <Page played={isPlayed} ref={pageRef}>
+          <Switch>
+            {!isLoggedIn && (
               <Route
-                path="/"
-                render={(routeProps) => (
-                  <Home {...routeProps} onClick={onClick} />
-                )}
+                path={['/', '/search', '/playlist/:playlistId']}
+                render={() => <NoLogin />}
                 exact
-              />
-              <Route
-                path="/search"
-                exact
-                render={(routeProps) => (
-                  <Search {...routeProps} onClick={onClick} />
-                )}
-              />
-              <Route
-                path="/playlist/:playlistId"
-                exact
-                render={(routeProps) => (
-                  <Playlist
-                    {...routeProps}
-                    setVideo={setVideo}
-                    setPlaylistItemsId={setPlaylistItemsId}
-                  />
-                )}
-              />
-
-              <Route
-                path="*"
-                render={({ history }) => {
-                  alert('이 페이지는 존재하지 않는 페이지입니다.')
-                  history.push('/')
-                }}
-              />
-            </Switch>
-            {isPlayed && (
-              <Player
-                type={type}
-                videoId={videoId}
-                playlistId={playlistId}
-                playlistItemsId={playlistItemsId}
-                scrollWidth={scrollWidth}
               />
             )}
-          </Page>
-        </GridContainer>
-      </BrowserRouter>
-    </>
-  )
-}
+            <Route
+              path="/"
+              render={routeProps => <Home {...routeProps} onClick={onClick} />}
+              exact
+            />
+            <Route
+              path="/search"
+              exact
+              render={routeProps => <Search {...routeProps} onClick={onClick} />}
+            />
+            <Route
+              path="/playlist/:playlistId"
+              exact
+              render={routeProps => (
+                <Playlist
+                  {...routeProps}
+                  setVideo={setVideo}
+                  setPlaylistItemsId={setPlaylistItemsId}
+                />
+              )}
+            />
 
-export default App
+            <Route
+              path="*"
+              render={({ history }) => {
+                alert('이 페이지는 존재하지 않는 페이지입니다.');
+                history.push('/');
+              }}
+            />
+          </Switch>
+          {isPlayed && (
+            <Player
+              type={type}
+              videoId={videoId}
+              playlistId={playlistId}
+              playlistItemsId={playlistItemsId}
+              scrollWidth={scrollWidth}
+            />
+          )}
+        </Page>
+      </GridContainer>
+    </BrowserRouter>
+  );
+};
+
+export default App;

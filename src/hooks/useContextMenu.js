@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export default function useContextMenu(ref, playlistId) {
+export default function useContextMenu() {
   const [contextMenu, setContextMenu] = useState({
     show: false,
     itemId: null,
     resourceId: null,
     x: 0,
     y: 0,
-  })
-
-  const [over, setOver] = useState({
+    offsetWidth: 0,
     overX: false,
   })
 
@@ -35,13 +33,21 @@ export default function useContextMenu(ref, playlistId) {
     setContextMenu((prevState) => ({ ...prevState, show: false }))
   }, [])
 
+  const measuredRef = useCallback((node) => {
+    if (node !== null) {
+      setContextMenu((prevState) => ({
+        ...prevState,
+        offsetWidth: node.offsetWidth,
+      }))
+    }
+  }, [])
+
   useEffect(() => {
     console.log('re rendering')
 
-    ref.current &&
-      ref.current.offsetWidth + contextMenu.x > window.innerWidth &&
-      setOver({ overX: true })
-  }, [ref, contextMenu.x])
+    contextMenu.offsetWidth + contextMenu.x > window.innerWidth &&
+      setContextMenu((prevState) => ({ ...prevState, overX: true }))
+  }, [contextMenu.x, contextMenu.offsetWidth])
 
-  return { contextMenu, onShow, onClose, over }
+  return { contextMenu, onShow, onClose, measuredRef }
 }

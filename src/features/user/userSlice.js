@@ -1,36 +1,32 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import { auth } from '../../firebaseInit';
+
+const initialState = {
+  displayName: null,
+  photoURL: null,
+  access_token: null,
+  isLoggedIn: false,
+};
 
 export const userSlice = createSlice({
   name: 'user',
-  initialState: (localStorage.getItem('user') &&
-    JSON.parse(localStorage.getItem('user'))) || {
-    displayName: null,
-    photoURL: null,
-    access_token: null,
-    isLoggedIn: false,
-  },
+  initialState: initialState,
   reducers: {
     signin: (state, action) => {
-      localStorage.setItem('user', JSON.stringify({ ...action.payload }))
-
       return {
+        ...state,
         ...action.payload,
-      }
+      };
     },
 
-    signOut: (state) => {
-      localStorage.removeItem('user')
+    signOut: state => {
+      auth.signOut();
 
-      return {
-        displayName: null,
-        photoURL: null,
-        access_token: null,
-        isLoggedIn: false,
-      }
+      return initialState;
     },
   },
-})
+});
 
-export const { signin, signOut } = userSlice.actions
+export const { signin, signOut } = userSlice.actions;
 
-export default userSlice.reducer
+export default userSlice.reducer;

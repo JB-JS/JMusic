@@ -587,14 +587,8 @@ const Playlist = ({ match, history, setVideo, setPlaylistItemsId }) => {
   const playlistId = match.params.playlistId
 
   const titleInputRef = useRef(null)
-  const menuRef = React.createRef()
 
-  const {
-    contextMenu,
-    onShow,
-    onClose,
-    over: { overX },
-  } = useContextMenu(menuRef, playlistId)
+  const { contextMenu, onShow, onClose, measuredRef } = useContextMenu()
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isOpen, setIsOpen] = useState(false)
   // const [contextMenu, setContextMenu] = useState({
@@ -1188,8 +1182,8 @@ const Playlist = ({ match, history, setVideo, setPlaylistItemsId }) => {
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
-          overX={overX}
-          ref={menuRef}
+          overX={contextMenu.overX}
+          measuredRef={measuredRef}
           onClose={onClose}
           contextMenu={contextMenu}
         >
@@ -1227,7 +1221,7 @@ const Playlist = ({ match, history, setVideo, setPlaylistItemsId }) => {
                   }}
                 />
               </div>
-              <HideList overX={overX}>
+              <HideList overX={contextMenu.overX}>
                 {playlists.length > 0 &&
                   playlists.map((playlist) => (
                     <li
