@@ -57,7 +57,7 @@ const SigninBtn = ({ width = '100%' }) => {
         // The email of the user's account used.
         const email = error.email;
         // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        // const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
       });
   }, [dispatch]);
