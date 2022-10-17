@@ -1,23 +1,27 @@
-import { useEffect, useState } from 'react'
-import Grid from '../../components/Grid'
-import { ytApi } from '../../lib/api/api'
+import { useEffect, useState } from 'react';
+import Grid from '../../components/Grid';
+import { ytApi } from '../../lib/api/api';
 
 const Home = ({ onClick }) => {
-  const [items, setItems] = useState(null)
+  const [items, setItems] = useState(null);
 
   useEffect(() => {
     async function fetchPopular() {
       const {
         data: { items },
-      } = await ytApi.getPopular()
+      } = await ytApi.getPopular();
 
-      setItems(items)
+      setItems(items);
     }
 
-    fetchPopular()
-  }, [])
+    fetchPopular();
+  }, []);
 
-  return <Grid items={items} title="인기 뮤직 비디오" onClick={onClick} />
-}
+  return (
+    <>
+      <Grid items={items} title="인기 뮤직 비디오" onClick={onClick} />
+    </>
+  );
+};
 
-export default Home
+export default Home;
